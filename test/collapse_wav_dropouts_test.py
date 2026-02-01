@@ -40,7 +40,7 @@ class TestAudioDropoutCollapser(unittest.TestCase):
 
         collapser = cwd.AudioDropoutCollapser(441)
         with patch.object(collapser, '_report_dropout') as mock_handler:
-            collapser.collapse(reader)
+            collapser.collapse(reader, None)
         mock_handler.assert_called_once_with(start//2, 1000, 44100)
 
 class TestAudioFrameBuffer(unittest.TestCase):
@@ -140,7 +140,3 @@ class TestRWaveReader(unittest.TestCase):
             b = reader.read(777)
             pos += len(b)
         self.assertEqual(pos, 40000)
-
-if __name__ == '__main__':
-    cwd.LogConfigurator().configre()
-    unittest.main()

@@ -598,7 +598,3 @@ class RAudioException(Exception):
     pass
 
 _: Callable[[str], str]
-the_app = AudioDropoutCollapserApp()
-
-if __name__ == '__main__':
-    sys.exit(the_app.run())
