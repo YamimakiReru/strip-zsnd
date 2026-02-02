@@ -1,0 +1,47 @@
+ja:
+  # Typer and Click
+  gettext.Aborted.: 中断しました.
+  gettext.Arguments: 引数
+  gettext.Commands: コマンド
+  gettext.Error: エラー
+  gettext.Options: オプション
+  'gettext.Usage:': '使い方:'
+
+  'gettext.[default: {}]': '[デフォルト: {}]'
+  'gettext.(deprecated) ': '(非推奨) '
+  'gettext.[env var: {}]': '[環境変数: {}]'
+  gettext.[required]: '[必須]'
+
+  'gettext.No such option: {name}': '未知のオプション: {name}'
+  gettext.Show this message and exit.: このメッセージを表示して終了します.
+  "gettext.Try [blue]'{command_path} {help_option}'[/] for help.": "[blue]'{command_path} {help_option}'[/] でヘルプを表示します."
+
+  click.options_metavar: '[オプション]'
+  click.subcommand_metavar: '[引数]...'
+  typer.completion.install_callback: カレントシェルにオートコンプリートをインストールします.
+  typer.completion.show_callback: カレントシェル用のオートコンプリートスクリプトを表示します. コピーやカスタマイズができます.
+
+  # Common
+  app.args.verbose: ログメッセージの詳細度. -vvvで最大.
+
+#   app.description: |
+#     WAVファイルの欠落0サンプルを除去するスクリプト
+
+#     録音時のバッファアンダーフローなどで発生する、連続した0サンプルを取り除きます.
+#     0サンプルではなく、波形が途中で飛んで断崖になっているものは直りません.
+
+#     直る(可能性のある)波形\t／|＿|＼
+
+#     直らない波形\t\t＿＿|￣￣
+#   app.args.input: 入力ファイルのパス
+#   app.args.output: '出力ファイルのパス. デフォルト: [input]-fixed'
+#   app.args.threshold: 'ドロップアウトとみなす最小長. 単位はサンプル数. 44kHzで44なら1ms. デフォルト: %%(default)s'
+#   app.args.eps: 'ゼロとみなす最大値. デフォルト: int:%{int_eps}, float:%{float_eps}'
+#   app.args.detect: 検出のみを行い、出力しません
+
+#   r.error.unsupported_format: サポートされていないフォーマット
+#   r.error.unsupported_format_exc: 'サポートされていないフォーマット: %s'
+#   r.error.mono_only_supported: モノラル音源のみのサポートです
+
+#   cwd.input_file_cannot_be_opened: 入力ファイル '%(f)s' を開けません:\n%(exc)s
+#   cwd.zero_run_detected: '%(abs_start)s-%(abs_end)s (%(length)dサンプル) 欠落'

@@ -1,1 +1,3 @@
-numpy
+typer
+i18nice
+i18nice[YAML]

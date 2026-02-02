@@ -1,3 +1,7 @@
+typer
+i18nice
+i18nice[YAML]
+
 pyinstaller
 pytest
 

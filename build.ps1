@@ -1,10 +1,14 @@
+Set-Variable -Name APP_NAME -Value strip-zsnd -Option Constant
+
 Set-Location $PSScriptRoot
 
 Remove-Item .\build -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item .\dist -Recurse -Force -ErrorAction SilentlyContinue
-Remove-Item .\strip-zsnd.spec -ErrorAction SilentlyContinue
 
 .\.venv\Scripts\Activate.ps1
-pyinstaller --onefile --name strip-zsnd src/main.py
+& {
+    $env:PYTHONPATH = "$PSScriptRoot\src"
+    pyinstaller "$APP_NAME.spec"
+}
 
-Remove-Item .\strip-zsnd.spec -ErrorAction SilentlyContinue
+Copy-Item -Path '.\locales' -Destination '.\dist\locales' -Recurse

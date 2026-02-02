@@ -1,0 +1,23 @@
+en:
+  click.subcommand_metavar: '[ARGS]...'
+
+  # use default messages
+  click.options_metavar:
+
+  'app.args.verbose': 'increases logging verbosity (e.g., -v, -vv, -vvv).'
+#         'app.description': """A script to remove missing zero-samples from a WAV file
+
+# Removes zero-runs caused by buffer underflow during recording.
+# Waveforms that have cliffs in the middle cannot be repaired.""",
+#         'app.args.input': 'path to the input file',
+#         'app.args.output': 'path to the output file. default: [input]-fixed',
+#         'app.args.threshold': """minimum zero-run length to remove (samples). at 44kHz, 44 = 1ms. default: %(default)s""",
+#         'app.args.detect': 'detects zero-runs without creating any output file',
+#         'app.args.eps': 'zero epsilon. default: int:%(int_eps)d, float:%(float_eps).2e',
+
+#         'r.error.unsupported_format': 'Unsupported format',
+#         'r.error.unsupported_format_exc': 'Unsupported format: %s',
+#         'r.error.mono_only_supported': 'Supports mono audio sources only',
+
+#         'cwd.input_file_cannot_be_opened': 'Input file "%(f)s" cannot be opened:\n%(exc)s',
+#         'cwd.zero_run_detected': '%(abs_start)s-%(abs_end)s (%(length)d samples) lacked',
