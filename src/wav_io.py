@@ -10,20 +10,20 @@ class ZeroSoundPredicate(ABC):
     def is_zero_sound_sample(self, frames_as_bytes: bytes, pos_in_bytes: int, threshold: float):
         pass
 
-class WavChunk:
-    def __init__(self, frames_as_bytes: bytes, wave_format: WaveFormat):
+class ZsndWavChunk:
+    def __init__(self, frames_as_bytes: bytes, bytes_per_sample: int):
         self._frames_as_bytes = frames_as_bytes
-        self._wave_foramt = wave_format
+        self._bytes_per_sample = bytes_per_sample
 
     def __len__(self):
         '''
         Returns the number of samples contained in this buffer
         '''
-        return len(self._frames_as_bytes) // self._wave_foramt.get_bytes_per_sample()
+        return len(self._frames_as_bytes) // self._bytes_per_sample
 
     def count_leading_zeros(self, predicate: ZeroSoundPredicate) -> int:
         count = 0
-        for i in range(0, len(self._frames_as_bytes), self._wave_foramt.get_bytes_per_sample()):
+        for i in range(0, len(self._frames_as_bytes), self._bytes_per_sample):
             if predicate.is_zero_sound_sample(self._frames_as_bytes, i):
                 count += 1
             else:
@@ -31,20 +31,16 @@ class WavChunk:
         return count
 
     def count_trailing_zeros(self, predicate: ZeroSoundPredicate) -> int:
-        sample_width = self._wave_foramt.get_bytes_per_sample()
-
         count = 0
-        i = len(self._frames_as_bytes) - sample_width
+        i = len(self._frames_as_bytes) - self._bytes_per_sample
         while i >= 0 and predicate.is_zero_sound_sample(self._frames_as_bytes, i):
             count += 1
-            i -= sample_width
+            i -= self._bytes_per_sample
         return count
 
-    def iterate_inner_zero_runs(self, predicate: ZeroSoundPredicate, threshold: int):
-        sample_width = self._wave_foramt.get_bytes_per_sample()
-
+    def iterate_inner_zero_runs(self, predicate: ZeroSoundPredicate):
         # skip leading and trailing zeros
-        i = self.count_leading_zeros(predicate) * sample_width
+        i = self.count_leading_zeros(predicate) * self._bytes_per_sample
 
         # scan inner dropouts
         num_bytes = len(self._frames_as_bytes)
@@ -53,28 +49,26 @@ class WavChunk:
         while i < num_bytes:
             if predicate.is_zero_sound_sample(self._frames_as_bytes, i):
                 if 0 == zero_run_length:
-                    zero_run_start = i // sample_width
+                    zero_run_start = i // self._bytes_per_sample
                 zero_run_length += 1
             else:
                 if zero_run_length > 0:
-                    if zero_run_length >= threshold:
-                        yield (zero_run_start, zero_run_length)
+                    yield (zero_run_start, zero_run_length)
                     zero_run_length = 0
-            i += sample_width
+            i += self._bytes_per_sample
 
     def __getitem__(self, key):
         assert isinstance(key, slice) and key.start and key.stop
-        sample_width = self._wave_foramt.get_bytes_per_sample()
-        return self._frames_as_bytes[key.start * sample_width:
-                key.end * sample_width]
+        return self._frames_as_bytes[key.start * self._bytes_per_sample
+                : key.end * self._bytes_per_sample]
 
 class ZsndWavReader(ZsndLogMixin):
     def __init__(self, f: io.BufferedIOBase):
         logger = self.get_logger()
 
         try:
-            self.wave_format = WaveFormatParser().parse(f)
-            logger.debug(self.wave_format)
+            self._wave_format = WaveFormatParser().parse(f)
+            logger.debug(self._wave_format)
         except Exception as exc:
             raise ZsndError(_('zsnd.failed_to_detect_file_type') + str(exc)) from exc
 
@@ -89,9 +83,12 @@ class ZsndWavReader(ZsndLogMixin):
     def close(self):
         self._wave_read.close()
 
-    def read(self, num_frames: int) -> WavChunk:
+    def read(self, num_frames: int) -> ZsndWavChunk:
         frames_as_bytes = self._wave_read.readframes(num_frames)
-        return WavChunk(frames_as_bytes, self.wave_format)
+        return ZsndWavChunk(frames_as_bytes, self._wave_format.get_bytes_per_sample())
+    
+    def tell(self):
+        return self._wave_read.tell()
 
     def count_frames(self) -> int:
         """
@@ -99,13 +96,19 @@ class ZsndWavReader(ZsndLogMixin):
         Each frame consists of one sample from every channel.
         """
         return self._wave_read.getnframes()
+    
+    def get_sample_rate(self) -> int:
+        return self._wave_read.getframerate()
+    
+    def get_wave_format(self) -> WaveFormat:
+        return self._wave_format
 
 class ZsndWavWriter:
-    def __init__(self, f: io.BufferedIOBase, reader: ZsndWavReader):
+    def __init__(self, f: io.BufferedIOBase, bytes_per_sample: int, sample_rate: int):
         self._wave_write: wave.Wave_write = wave.open(f, 'wb')
         self._wave_write.setnchannels(1)
-        self._wave_write.setsampwidth(reader.wave_format.get_bytes_per_sample())
-        self._wave_write.setframerate(reader.wave_format.nSamplesPerSec)
+        self._wave_write.setsampwidth(bytes_per_sample)
+        self._wave_write.setframerate(sample_rate)
 
     def write(self, data: bytes):
         self._wave_write.writeframes(data)

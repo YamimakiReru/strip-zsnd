@@ -51,6 +51,11 @@ class StripZsndApp(TyperApp):
                 '--detect',
                 help='zsnd.args.detect',
                 ), LazyHelp()] = False,
+            force: Annotated[Optional[bool], typer.Option(
+                '-f/-i', '--force',
+                help='app.args.force',
+            ), LazyHelp()] = False,
             verbose: TyperApp.Verbose = 0,
             debug: TyperApp.Debug = False):
-        return StripZsndController().strip(str(input), str(output), min_duration, threshold, detect_only)
+        return StripZsndController().strip(str(input), str(output), force,
+                min_duration, threshold, detect_only)

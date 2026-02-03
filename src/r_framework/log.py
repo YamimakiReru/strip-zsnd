@@ -52,8 +52,8 @@ class LoggerRepository:
 
     @classmethod
     def _init(cls):
-        if 'TRACE' in logging.getLevelNamesMapping():
-            logging.addLevelName(LogMixin.LOG_LEVEL_TRACE, 'TRACE')
+        if 'TRACE' not in logging.getLevelNamesMapping():
+            logging.addLevelName(TRACE, 'TRACE')
 
 class LogConfigurator:
     def configure(self, verbosity: int):

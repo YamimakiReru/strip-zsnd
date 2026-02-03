@@ -5,24 +5,22 @@ en:
     Removes consecutive zeros caused by buffer underflow during recording.
     Waveforms that have cliffs in the middle cannot be repaired.
 
-  zsnd.args.detect: Detects zero-runs without creating any output file.
+  zsnd.args.detect: Detect zero-runs without creating any output file.
   zsnd.args.min_duration: 'Minimum duration considered a dropout. Unit: milliseconds.'
   zsnd.args.threshold: 'Volume threshold considered zero. Unit: dB. En PCM interno, se ignoran los valores muy pequeños.'
-
-  app.args.input: Path to the input file.
-  app.args.output: 'Path to the output file. default: [input]-fixed'
-  app.args.verbose: increases logging verbosity (e.g., -v, -vv, -vvv).
-  app.processing: Procesamiento...
-
-  zsnd.input_file_cannot_be_opened: |
-    Input file "%%(f)s" cannot be opened:
-    %%(exc)s
-  zsnd.output_file_cannot_be_opened: |
-    Output file "%%(f)s" cannot be opened:
-    %%(exc)s
   zsnd.failed_to_detect_file_type: "Failed to open file (maybe unsupported format): "
   zsnd.mono_only_supported: Supports mono audio sources only
-#         'cwd.zero_run_detected': '%(abs_start)s-%(abs_end)s (%(length)d samples) lacked',
+  zsnd.zero_sound_detected: '%%(abs_start)s-%%(abs_end)s (%%(length)d samples) lacked'
+
+  # Common
+  app.args.force: Overwrite the output file without confirmation, if it already exists.
+  app.args.input: Path to the input file.
+  app.args.output: 'Path to the output file. default: [input]-fixed'
+  app.args.verbose: Increase logging verbosity (e.g., -v, -vv, -vvv).
+  app.processing: Processing...
+  app.confirm_overwrite_output_file: '%%s already exists. Do you want to overwrite it?'
+  app.input_file_cannot_be_opened: 'Input file "%%(f)s" cannot be opened: %%(exc)s'
+  app.output_file_cannot_be_opened: 'Output file "%%(f)s" cannot be opened: %%(exc)s'
 
   click.subcommand_metavar: '[ARGS]...'
 
