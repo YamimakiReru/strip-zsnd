@@ -1,4 +1,3 @@
-# coding: utf-8
 from __future__ import annotations
 
 from rich.logging import RichHandler
@@ -70,4 +69,4 @@ class LogConfigurator:
             logging.root.removeHandler(h)
         logging.basicConfig(level=level,
                 # format="%(levelname)s: %(message)s",
-                handlers=[RichHandler(markup=True, rich_tracebacks=True)])
+                handlers=[RichHandler(markup=False, rich_tracebacks=True)])

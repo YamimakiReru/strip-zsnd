@@ -13,16 +13,12 @@ ja:
   # FIXME
   zsnd.args.detect: 検出のみを行い、出力しません.
   zsnd.args.min_duration: ドロップアウトとみなす最小長. 単位はミリ秒.
-  zsnd.args.threshold: ゼロとみなす音量のしきい値. 単位はdB.
+  zsnd.args.threshold: 'ゼロとみなす音量のしきい値. 単位: dB. Int PCMでは一定以下の値は無視されます.'
 
   app.args.input: 入力ファイルのパス
   app.args.output: '出力ファイルのパス. デフォルト: \[input]-fixed'
   app.args.verbose: ログメッセージの詳細度. -vvvで最大.
   app.processing: 処理中...
-
-#   r.error.unsupported_format: サポートされていないフォーマット
-  r.error.unsupported_format_exc: 'サポートされていないフォーマット: %%s'
-  r.error.mono_only_supported: モノラル音源のみのサポートです
 
   zsnd.input_file_cannot_be_opened: |
     入力ファイル "%%(f)s" を開けません:
@@ -30,19 +26,35 @@ ja:
   zsnd.output_file_cannot_be_opened: |
     出力ファイル "%%(f)s" を開けません:
     %%(exc)s
+  zsnd.failed_to_detect_file_type: "入力ファイルの読み込みに失敗しました (おそらく未サポートの形式): "
+  zsnd.mono_only_supported: モノラル音源のみのサポートです
 #   cwd.zero_run_detected: '%(abs_start)s-%(abs_end)s (%(length)dサンプル) 欠落'
 
   # Typer and Click
+  #
+  # Original licenses:
+  # - Typer: MIT License        Copyright (c) 2019 Sebastián Ramírez
+  # - Click: BSD-style license  Copyright 2014 Pallets
   click.options_metavar: '[オプション]'
   click.subcommand_metavar: '[引数]...'
   typer.completion.install_callback: カレントシェルにオートコンプリートをインストールします.
   typer.completion.show_callback: カレントシェル用のオートコンプリートスクリプトを表示します. コピーやカスタマイズができます.
 
+  'gettext.Invalid value for {param_hint}: {message}': '{param_hint} では無効な値: {message}'
   gettext.Missing argument: 引数が不足しています
+  gettext.{name} {filename!r} does not exist.: '{name} {filename!r} は存在しません.'
+  gettext.{name} {filename!r} is a directory.: '{name} {filename!r} はディレクトリです.'
+  gettext.{name} {filename!r} is a file.: '{name} {filename!r} はファイルです.'
+  gettext.{name} {filename!r} is not executable.: '{name} {filename!r} は実行できません.'
+  gettext.{name} {filename!r} is not readable.: '{name} {filename!r} は読み込めません.'
+  gettext.{name} {filename!r} is not writble.: '{name} {filename!r} は書きこめません.'
   'gettext.No such option: {name}': '未知のオプション: {name}'
   gettext.Show this message and exit.: このメッセージを表示して終了します.
   "gettext.Try [blue]'{command_path} {help_option}'[/] for help.": "[blue]'{command_path} {help_option}'[/] でヘルプを表示します."
-
+  gettext.{value} is not in the range {range}.: '{value} は {range} の範囲に含まれません.'
+  'gettext.{value!r} is not a valid boolean. Recognized values: {states}': '{value!r} は真偽値として無効です. 認識された値: {states}'
+  gettext.{value!r} is not a valid {number_type}.: '{value!r} は {number_type} として無効です.'
+  
   'gettext.[default: {}]': '[デフォルト: {}]'
   'gettext.(deprecated) ': '(非推奨) '
   'gettext.[env var: {}]': '[環境変数: {}]'
@@ -51,6 +63,13 @@ ja:
   gettext.Aborted.: 中断しました.
   gettext.Arguments: 引数
   gettext.Commands: コマンド
+  gettext.directory: ディレクトリ
   gettext.Error: エラー
+  gettext.file: ファイル
   gettext.Options: オプション
+  gettext.path: パス
   'gettext.Usage:': '使い方:'
+
+  ngettext.{value!r} is not {choice}.:
+    one: '{value!r} は {choice} ではありません.'
+    many: '{value!r} は {choice} ではありません.'

@@ -4,5 +4,6 @@ i18nice[YAML]
 
 pyinstaller
 pytest
+pytest-html
 
 numpy

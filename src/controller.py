@@ -1,21 +1,28 @@
-# coding: utf-8
-
 from service import StripZsndService, StrippingEventListener
-from model import RWavReader, RWavWriter, ZsndLogMixin
+from wav_io import ZsndWavReader, ZsndWavWriter
+from util import ZsndLogMixin
 
 from rich.progress import Progress
 from i18n import t as _
 import io
 import os
+from typing import override
 
 class StripZsndController(StrippingEventListener, ZsndLogMixin):
-    def _do_strip(self, reader: RWavReader, writer, min_duration, threshold, detect_only):
-        service = StripZsndService(self)
+    '''
+    Controller class should take care of environment‑specific concerns (data stores, UX and so on),
+    so that Service class can focus exclusively on core business logic and become more testable.
+    '''
+    def __init__(self):
+        self.service = StripZsndService(self)
+
+    def _do_strip(self, reader: ZsndWavReader, writer, min_duration, threshold, detect_only):
         with Progress() as progress:
             self._progress = progress
             self._progress_task = progress.add_task(_('app.processing'), total=reader.count_frames())
-            service.strip(reader, writer, min_duration, threshold, detect_only)
+            self.service.strip(reader, writer, min_duration, threshold, detect_only)
 
+    @override
     def on_update_progress(self, num_processed_frames, num_total_frames):
         assert self._progress is not None
         assert self._progress_task is not None
@@ -48,12 +55,12 @@ class StripZsndController(StrippingEventListener, ZsndLogMixin):
             reader.close()
             in_file.close()
 
-    def _create_reader(self, path: str) -> tuple[io.BufferedIOBase|None, RWavReader|None]:
+    def _create_reader(self, path: str) -> tuple[io.BufferedIOBase|None, ZsndWavReader|None]:
         try:
             f = io.open(path, 'rb')
             try:
                 # Wave_read does not close the file if it is created by an opend file
-                return (f, RWavReader(f))
+                return (f, ZsndWavReader(f))
             except BaseException as exc:
                 f.close()
                 raise
@@ -63,11 +70,11 @@ class StripZsndController(StrippingEventListener, ZsndLogMixin):
             logger.debug('', exc_info=True)
             return (None, None)
 
-    def _create_writer(self, path: str, reader: RWavReader) -> tuple[io.BufferedIOBase|None, RWavWriter|None]:
+    def _create_writer(self, path: str, reader: ZsndWavReader) -> tuple[io.BufferedIOBase|None, ZsndWavWriter|None]:
         try:
             outf = io.open(path, 'wb')
             try:
-                return (outf, RWavWriter(outf, reader))
+                return (outf, ZsndWavWriter(outf, reader))
             except BaseException as exc:
                 outf.close()
                 raise

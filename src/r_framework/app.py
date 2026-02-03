@@ -9,7 +9,7 @@ import typer.core
 import click
 from pathlib import Path
 from i18n import t as _
-from typing import Annotated, Optional, Callable
+from typing import Annotated, Optional, Callable, override
 import typing
 
 class App:
@@ -46,9 +46,11 @@ class TyperApp(App):
             help=_('app.description'),
         )(func)
 
+    @override
     def __init__(self, name, app_dir):
         super().__init__(name, app_dir)
 
+    @override
     def boot(self, args):
         super().boot(args)
 
@@ -100,11 +102,13 @@ class TyperApp(App):
                 p.help = _(p.help)
 
     class _TyperCommand(typer.core.TyperCommand):
+        @override
         def format_help(self, ctx, formatter):
             TyperApp._translate_typer_parameters(self.callback, self.params)
             return super().format_help(ctx, formatter)
 
     class _TyperGroup(typer.core.TyperGroup):
+        @override
         def format_help(self, ctx, formatter):
             TyperApp._translate_typer_parameters(self.callback, self.params)
             return super().format_help(ctx, formatter)

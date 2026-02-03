@@ -1,4 +1,3 @@
-# -*- mode: python ; coding: utf-8 -*-
 # type: ignore
 
 from PyInstaller.utils.hooks import collect_all

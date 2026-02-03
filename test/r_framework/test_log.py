@@ -1,12 +1,9 @@
-# coding: utf-8
-
 import unittest
-from r_framework.log import LogMixin
+from r_framework import LogMixin
 
-class TestRLogMixin(unittest.TestCase):
+class TestLogMixin(unittest.TestCase):
     class _LogMixinSubclass(LogMixin):
         LOGGER_PRFIX = 'r.test.log.'
-        pass
 
     def test_get_logger(self):
         log_mixin = LogMixin()

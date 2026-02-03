@@ -1,11 +1,9 @@
-# coding: utf-8
-
-from model import RWavReader
+from wav_io import ZsndWavReader, WavChunk
+from wav_logic import _PcmIntZeroSoundPredicate
+from wave_format import WaveFormat
 
 import wave
-# import numpy as np
 import io
-# import random
 # from unittest.mock import patch
 import unittest
 
@@ -44,87 +42,44 @@ import unittest
 #             collapser.collapse(reader, None)
 #         mock_handler.assert_called_once_with(start//2, 1000, 44100)
 
-# class TestAudioFrameBuffer(unittest.TestCase):
-#     def test_count_leading_zeros(self):
-#         predicate = cwd.IntZeroSamplePredicate(2)
-#         bbuf = bytearray([0x40] * 4000)
-#         bbuf[:(2 * 200)] = bytes(2 * 200)
-#         audio_buffer = cwd.AudioFrameBuffer(bbuf, 2)
-#         self.assertEqual(200, audio_buffer.count_leading_zeros(predicate))
+class TestWavChunk(unittest.TestCase):
+    def _create_wave_foramt(self):
+        # int16
+        return WaveFormat(
+            wFormatTag=WaveFormat.FORMAT_TAG_PCM,
+            nChannels=1,
+            nSamplesPerSec=44100,
+            nAvgBytesPerSec=88200,
+            nBlockAlign=2,
+            wBitsPerSample=16,
+        )
 
-#     def test_count_trailing_zeros(self):
-#         predicate = cwd.IntZeroSamplePredicate(2)
-#         bbuf = bytearray([0x40] * 4000)
-#         bbuf[-(2 * 200):] = bytes(2 * 200)
-#         audio_buffer = cwd.AudioFrameBuffer(bbuf, 2)
-#         self.assertEqual(200, audio_buffer.count_trailing_zeros(predicate))
+    def test_count_leading_zeros(self):
+        predicate = _PcmIntZeroSoundPredicate(2, -80)
+        bbuf = bytearray([0x40] * 4000)
+        bbuf[:(2 * 200)] = bytes(2 * 200)
+        chunk = WavChunk(bbuf, self._create_wave_foramt())
+        self.assertEqual(200, chunk.count_leading_zeros(predicate))
 
-#     def test_iterate_inner_zero_runs(self):
-#         predicate = cwd.IntZeroSamplePredicate(2)
-#         bbuf = bytearray([0x40] * 4000)
-#         bbuf[(2 * 100):(2 * 200)] = bytes(2 * (200-100))
-#         bbuf[(2  *594):(2 * 680)] = bytes(2 * (680-594))
-#         audio_buffer = cwd.AudioFrameBuffer(bbuf, 2)
-#         self.assertEqual(list(audio_buffer.iterate_inner_zero_runs(predicate, 22)),[
-#             (100, 200-100),
-#             (594, 680-594),
-#         ])
+    def test_count_trailing_zeros(self):
+        predicate = _PcmIntZeroSoundPredicate(2, -80)
+        bbuf = bytearray([0x40] * 4000)
+        bbuf[-(2 * 200):] = bytes(2 * 200)
+        chunk = WavChunk(bbuf, self._create_wave_foramt())
+        self.assertEqual(200, chunk.count_trailing_zeros(predicate))
 
-# class TestIntZeroSamplePredicate(unittest.TestCase):
-#     def test_positive_zero_samples_int16(self):
-#         self._do_test_positive_zero_samples_int(2)
+    def test_iterate_inner_zero_runs(self):
+        predicate = _PcmIntZeroSoundPredicate(2, -80)
+        bbuf = bytearray([0x40] * 4000)
+        bbuf[(2 * 100):(2 * 200)] = bytes(2 * (200-100))
+        bbuf[(2  *594):(2 * 680)] = bytes(2 * (680-594))
+        chunk = WavChunk(bbuf, self._create_wave_foramt())
+        self.assertEqual(list(chunk.iterate_inner_zero_runs(predicate, 22)),[
+            (100, 200-100),
+            (594, 680-594),
+        ])
 
-#     def test_positive_zero_samples_int24(self):
-#         self._do_test_positive_zero_samples_int(3)
-
-#     def test_positive_zero_samples_int32(self):
-#         self._do_test_positive_zero_samples_int(4)
-
-#     def _do_test_positive_zero_samples_int(self, width: int):
-#         count = 4000
-#         buf = bytearray(count * width)
-#         for i in range(0, count):
-#             buf[i * width] = random.randint(0,
-#                     cwd.IntZeroSamplePredicate.DEFAULT_EPS)
-#         predicate = cwd.IntZeroSamplePredicate(width)
-#         for i in range(0, len(buf) // width, width):
-#             self.assertTrue(predicate.is_zero_sample(buf, i), f'{i}: {buf[i:i+width]}')
-
-#     def test_negative_zero_samples_int16(self):
-#         self._do_test_negative_zero_samples_int(2)
-
-#     def test_negative_zero_samples_int24(self):
-#         self._do_test_negative_zero_samples_int(3)
-
-#     def test_negative_zero_samples_int32(self):
-#         self._do_test_negative_zero_samples_int(4)
-
-#     def _do_test_negative_zero_samples_int(self, width: int):
-#         count = 4000
-#         buf = bytearray([0xFF] * (count * width))
-#         for i in range(0, count):
-#             buf[i * width] = random.randint(
-#                     0xFF - cwd.IntZeroSamplePredicate.DEFAULT_EPS + 1, 0xFF)
-#         predicate = cwd.IntZeroSamplePredicate(width)
-#         for i in range(0, len(buf) // width, width):
-#             self.assertTrue(predicate.is_zero_sample(buf, i), f'{i}: {buf[i:i+width]}')
-
-# class TestFloatZeroSamplePredicate(unittest.TestCase):
-#     def test_zero_samples_fp32(self):
-#         self._do_test_zero_samples_float(4, np.float32)
-
-#     def test_zero_samples_fp64(self):
-#         self._do_test_zero_samples_float(8, np.float64)
-
-#     def _do_test_zero_samples_float(self, width: int, dtype: np.dtype):
-#         lim = cwd.FloatZeroSamplePredicate.DEFAULT_EPS * 0.9
-#         vals = np.random.uniform(-lim, +lim, 4000).astype(dtype)
-#         buf = vals.tobytes()
-#         predicate = cwd.FloatZeroSamplePredicate(width)
-#         for i in range(0, 4000):
-#             self.assertTrue(predicate.is_zero_sample(buf, i*width), f'{i}: {buf[i*width:i*width+width]}')
-
-class TestRWavReader(unittest.TestCase):
+class TestZsndWavReader(unittest.TestCase):
     def test_read(self):
         buf = io.BytesIO()
         with wave.open(buf, 'wb') as w:
@@ -133,7 +88,7 @@ class TestRWavReader(unittest.TestCase):
             w.setframerate(44100)
             w.writeframes(bytes(2 * 40000))
         buf.seek(0)
-        reader = RWavReader(buf)
+        reader = ZsndWavReader(buf)
         num_samples = reader.count_frames()
         self.assertEqual(40000, num_samples)
         pos = 0

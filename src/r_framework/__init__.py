@@ -1,5 +1,3 @@
-# coding: utf-8
-
 # homegrown framework (オレオレフレームワーク)
 
 from .log import LogMixin, LoggerRepository

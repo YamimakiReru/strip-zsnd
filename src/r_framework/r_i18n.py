@@ -1,5 +1,3 @@
-# coding: utf-8
-
 from .log import _FrameworkLogMixin
 import r_framework as r
 
@@ -12,6 +10,7 @@ import os
 
 class I18nConfigurator(_FrameworkLogMixin):
     GETTEXT_KEY_PREFIX = 'gettext.'
+    NGETTEXT_KEY_PREFIX = 'ngettext.'
     FALLBACK = 'en'
     FORMAT = 'yml'
 
@@ -41,6 +40,7 @@ class I18nConfigurator(_FrameworkLogMixin):
     def hook_gettext(self):
         # gettext.gettext() calls dgettext() internally
         gettext.dgettext = self._gettext_hook_proc
+        gettext.dngettext = self._ngettext_hook_proc
 
     @classmethod
     def _on_missing_translation(cls, key, locale, **kwargs):
@@ -54,6 +54,18 @@ class I18nConfigurator(_FrameworkLogMixin):
     @classmethod
     def _gettext_hook_proc(cls, domain, key):
         return i18n.t(cls.GETTEXT_KEY_PREFIX + key)
+
+    @classmethod
+    def _ngettext_hook_proc(cls, domain, msgid1, msgid2, n):
+        actual_key = cls.NGETTEXT_KEY_PREFIX + msgid1
+        result = i18n.t(actual_key, count=n)
+        if actual_key != result:
+            return result
+        alternative_key = cls.GETTEXT_KEY_PREFIX + msgid1
+        result = i18n.t(alternative_key)
+        if alternative_key != result:
+            return result
+        return msgid1
 
     def _determine_locale(self, available_locales: list[str]) -> str | None:
         locale_ids = locale.getlocale()

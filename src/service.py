@@ -1,6 +1,5 @@
-# coding: utf-8
-
-from model import RWavReader, RWavWriter, LogMixin
+from wav_io import ZsndWavReader, ZsndWavWriter
+from util import LogMixin
 
 # from i18n import t as _
 
@@ -17,7 +16,7 @@ class StripZsndService(LogMixin):
     def __init__(self, listener: StrippingEventListener|None):
         self.listener = listener
 
-    def strip(self, reader: RWavReader, writer: RWavWriter|None, min_duration: int, threshold: float, detect_only: bool = False):
+    def strip(self, reader: ZsndWavReader, writer: ZsndWavWriter|None, min_duration: int, threshold: float, detect_only: bool = False):
 #         self._threshold = threshold
 #         self._eps = eps
 #         self._detect_only = detect_only
