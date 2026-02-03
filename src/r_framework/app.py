@@ -33,16 +33,17 @@ class LazyHelp:
     '''
     Lazy translation to allow flexible execution order.
     '''
-    def __init__(default = ..., *param_decls: str):
-        pass
-    #     func.__dict__[cls._LAZY_HELP_ARGS] = kwargs
-    #     return func
+    pass
 
 class TyperApp(App):
+    Debug = Annotated[Optional[bool], typer.Option()]
+    Verbose = Annotated[Optional[int], typer.Option('-v', '--verbose', count=True, help='app.args.verbose'), LazyHelp()]
+
     def register_command(self, func: Callable, name: str):
         self.typer.command(
             cls=self._TyperCommand,
             name = name,
+            help=_('app.description'),
         )(func)
 
     def __init__(self, name, app_dir):
@@ -50,28 +51,23 @@ class TyperApp(App):
 
     def boot(self, args):
         super().boot(args)
+
+        base_type, *metadata = typing.get_args(self.Verbose)
+        metadata[0].callback = self._verbose_callback
+
         self.typer = typer.Typer(
             name=self.name,
+            help=_('app.description'),
             options_metavar=_('click.options_metavar'),
             subcommand_metavar=_('click.subcommand_metavar'),
         )
 
     def run(self, *args):
-        self.typer.callback(
-            invoke_without_command=True,
-            cls=self._TyperGroup,
-        )(self._typer_app_callback)
-
-        # avoid showing the Commands section when there is only one command
-        if 1 == len(self.typer.registered_commands):
-            self.typer.registered_commands[0].hidden = True
-
         self.typer(args=args)
 
-    def _typer_app_callback(self,
-            debug: Annotated[Optional[bool], typer.Option()] = False,
-            verbose: Annotated[Optional[int], typer.Option('-v', '-verbose', count=True, help='app.args.verbose'), LazyHelp()] = 0):
-        self.configure_log(verbose)
+    def _verbose_callback(self, verbosity):
+        min_limit = 1 if r.DEBUG else 0
+        self.configure_log(max(verbosity, min_limit))
 
     @classmethod
     def _translate_typer_parameters(cls, func: Callable, typer_params: list[click.Option|click.Argument]):

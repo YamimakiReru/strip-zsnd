@@ -1,42 +1,50 @@
 es:
+  # Common
+  'app.description': |
+    Una herramienta para eliminar las muestras cero que faltan en un archivo WAV
+
+    Elimina los ceros consecutivos causados por el desbordamiento del búfer durante la grabación.
+    Las formas de onda que presentan saltos en el medio no se pueden reparar.
+
+  zsnd.args.detect: Detecta secuencias de ceros sin crear ningún archivo de salida
+  zsnd.args.min_duration: 'Duración mínima considerada como abandono. Unidad: milisegundos.'
+  zsnd.args.threshold: 'Umbral de volumen considerado cero. Unidad: dB.'
+
+  app.args.verbose: Aumentar la verbosidad del registro (por ejemplo, -v, -vv, -vvv).
+  app.args.input: Ruta al archivo de entrada
+  app.args.output: 'Ruta al archivo de salida. predeterminado: [input]-fixed'
+
+#         'r.error.unsupported_format': 'Formato no compatible',
+  r.error.unsupported_format_exc: 'Formato no compatible: %%s'
+  r.error.mono_only_supported: Solo admite fuentes de audio mono
+
+  zsnd.input_file_cannot_be_opened: |
+    No se puede abrir el archivo de entrada "%%(f)s"
+    %%(exc)s
+  zsnd.input_file_cannot_be_opened: |
+    No se puede abrir el archivo de salida "%%(f)s"
+    %%(exc)s
+#         'cwd.zero_run_detected': '%(abs_start)s-%(abs_end)s (%(length)d muestras) carecían de',
+
   # Typer and Click
-  gettext.Aborted.: Abortado.
-  gettext.Arguments: Argumentos
-  gettext.Commands: Comandos
-  gettext.Error: Error
-  gettext.Options: Opciones
-  'gettext.Usage:': 'Uso:'
+  click.options_metavar: '[Opciones]'
+  click.subcommand_metavar: '[ARGS]...'
+  typer.completion.install_callback: Instalar autocompletado para el shell actual.
+  typer.completion.show_callback: Muestra el autocompletado para el shell actual, para copiarlo o personalizar la instalación.
+
+  gettext.Missing argument: Argumento faltante
+  'gettext.No such option: {name}': 'No existe tal opción: {name}'
+  gettext.Show this message and exit.: Mostrar este mensaje y salir.
+  "gettext.Try [blue]'{command_path} {help_option}'[/] for help.": "Prueba [blue]'{command_path} {help_option}'[/] para obtener ayuda."
 
   'gettext.[default: {}]': '[predeterminado: {}]'
   'gettext.(deprecated) ': '(obsoleto) '
   'gettext.[env var: {}]': '[variable de entorno: {}]'
   gettext.[required]: '[requerido]'
 
-  'gettext.No such option: {name}': 'No existe tal opción: {name}'
-  gettext.Show this message and exit.: Mostrar este mensaje y salir.
-  "gettext.Try [blue]'{command_path} {help_option}'[/] for help.": "Prueba [blue]'{command_path} {help_option}'[/] para obtener ayuda."
-
-  click.options_metavar: '[Opciones]'
-  click.subcommand_metavar: '[ARGS]...'
-  typer.completion.install_callback: Instalar autocompletado para el shell actual.
-  typer.completion.show_callback: Muestra el autocompletado para el shell actual, para copiarlo o personalizar la instalación.
-
-  # Common
-  app.args.verbose: aumentar la verbosidad del registro (por ejemplo, -v, -vv, -vvv).
-
-#         'app.description': '''Un script para eliminar las muestras cero que faltan en un archivo WAV
-
-# Elimina las pérdidas de datos por cero causadas por problemas de grabación, como el desbordamiento del búfer.
-# Las formas de onda que presentan saltos en el medio no se pueden reparar.''',
-#         'app.args.input': 'ruta al archivo de entrada',
-#         'app.args.output': 'ruta al archivo de salida. predeterminado: [input]-fixed',
-#         'app.args.threshold': '''longitud mínima de ejecución cero para eliminar (muestras). at 44kHz, 44 = 1ms. predeterminado: %(default)s''',
-#         'app.args.detect': 'detecta secuencias de ceros sin crear ningún archivo de salida',
-#         'app.args.eps': 'épsilon. predeterminado: int:%(int_eps)d, float:%(float_eps).2e',
-
-#         'r.error.unsupported_format': 'Formato no compatible',
-#         'r.error.unsupported_format_exc': 'Formato no compatible: %s',
-#         'r.error.mono_only_supported': 'Solo admite fuentes de audio mono',
-
-#         'cwd.input_file_cannot_be_opened': 'No se puede abrir el archivo de entrada '%(f)s'\n%(exc)s',
-#         'cwd.zero_run_detected': '%(abs_start)s-%(abs_end)s (%(length)d muestras) carecían de',
+  gettext.Aborted.: Abortado.
+  gettext.Arguments: Argumentos
+  gettext.Commands: Comandos
+  gettext.Error: Error
+  gettext.Options: Opciones
+  'gettext.Usage:': 'Uso:'

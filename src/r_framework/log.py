@@ -1,5 +1,7 @@
 # coding: utf-8
 from __future__ import annotations
+
+from rich.logging import RichHandler
 import logging
 import threading
 
@@ -66,4 +68,6 @@ class LogConfigurator:
         # remove existing handlers to reconfigure
         for h in logging.root.handlers:
             logging.root.removeHandler(h)
-        logging.basicConfig(level=level, format="%(levelname)s: %(message)s")
+        logging.basicConfig(level=level,
+                # format="%(levelname)s: %(message)s",
+                handlers=[RichHandler(markup=True, rich_tracebacks=True)])

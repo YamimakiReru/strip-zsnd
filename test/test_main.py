@@ -1,13 +1,13 @@
 # coding: utf-8
 
-# import strip_zsnd as cwd
+from model import RWavReader
 
-# from unittest.mock import patch
-# import unittest
-# import wave
+import wave
 # import numpy as np
-# import io
+import io
 # import random
+# from unittest.mock import patch
+import unittest
 
 # class TestAudioDropoutCollapser(unittest.TestCase):
 #     def test_format_num_samples_in_ms(self):
@@ -124,20 +124,20 @@
 #         for i in range(0, 4000):
 #             self.assertTrue(predicate.is_zero_sample(buf, i*width), f'{i}: {buf[i*width:i*width+width]}')
 
-# class TestRWaveReader(unittest.TestCase):
-#     def test_read(self):
-#         buf = io.BytesIO()
-#         with wave.open(buf, 'wb') as w:
-#             w.setnchannels(1)
-#             w.setsampwidth(2)
-#             w.setframerate(44100)
-#             w.writeframes(bytes(2 * 40000))
-#         buf.seek(0)
-#         reader = cwd.RWaveReader(cwd.WaveFormatParser(), buf)
-#         num_samples = reader.count_frames()
-#         self.assertEqual(40000, num_samples)
-#         pos = 0
-#         while (pos < num_samples):
-#             b = reader.read(777)
-#             pos += len(b)
-#         self.assertEqual(pos, 40000)
+class TestRWavReader(unittest.TestCase):
+    def test_read(self):
+        buf = io.BytesIO()
+        with wave.open(buf, 'wb') as w:
+            w.setnchannels(1)
+            w.setsampwidth(2)
+            w.setframerate(44100)
+            w.writeframes(bytes(2 * 40000))
+        buf.seek(0)
+        reader = RWavReader(buf)
+        num_samples = reader.count_frames()
+        self.assertEqual(40000, num_samples)
+        pos = 0
+        while (pos < num_samples):
+            b = reader.read(777)
+            pos += len(b)
+        self.assertEqual(pos, 40000)
