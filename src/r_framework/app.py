@@ -1,4 +1,3 @@
-# coding: utf-8
 from .r_i18n import I18nConfigurator
 from .log import LogConfigurator
 import r_framework as r
@@ -9,7 +8,8 @@ import typer.core
 import click
 from pathlib import Path
 from i18n import t as _
-from typing import Annotated, Optional, Callable, override
+from typing_extensions import override
+from typing import Annotated, Optional, Callable
 import typing
 
 class App:

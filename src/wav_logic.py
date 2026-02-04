@@ -5,7 +5,7 @@ from wav_io import ZsndWavReader, ZeroSoundPredicate
 from util import ZsndError, ZsndLogMixin
 
 import struct
-from typing import override
+from typing_extensions import override
 
 class _ZeroSoundPredicateImpl(ZeroSoundPredicate, ZsndLogMixin):
     def __init__(self, sample_width_in_bytes: int):

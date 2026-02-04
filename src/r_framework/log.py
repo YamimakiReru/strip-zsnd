@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import r_framework as r
+
 from rich.logging import RichHandler
 import logging
 import threading
@@ -67,6 +69,10 @@ class LogConfigurator:
         # remove existing handlers to reconfigure
         for h in logging.root.handlers:
             logging.root.removeHandler(h)
-        logging.basicConfig(level=level,
-                # format="%(levelname)s: %(message)s",
-                handlers=[RichHandler(markup=False, rich_tracebacks=True)])
+        kwargs = {
+            'level': level,
+            'handlers': [RichHandler(show_path=r.DEBUG, rich_tracebacks=r.DEBUG)],
+        }
+        if not r.DEBUG:
+            kwargs['format']='%(message)s'
+        logging.basicConfig(**kwargs)

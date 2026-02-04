@@ -1,33 +1,36 @@
-from service import StripZsndService, StrippingEventListener
+from service import StripZsndService
 from wav_io import ZsndWavReader, ZsndWavWriter
 from util import ZsndLogMixin
 
-from rich.progress import Progress
+import rich.live
+import rich.panel
+import rich.progress
 import typer
 from i18n import t as _
 import io
 import os
-from typing import override
+from typing_extensions import override
 
-class StripZsndController(StrippingEventListener, ZsndLogMixin):
+class StripZsndController(ZsndLogMixin):
     '''
     Controller class should take care of environment‑specific concerns (data stores, UX and so on),
     so that Service class can focus exclusively on core business logic and become more testable.
     '''
-    def _do_strip(self, reader: ZsndWavReader, writer, min_duration, threshold, detect_only):
-        with Progress() as progress:
-            self._progress = progress
-            self._progress_task = progress.add_task(_('app.processing'), total=reader.count_frames())
-            StripZsndService().strip(reader, writer, min_duration, threshold, detect_only, self)
-
-    @override
-    def on_update_progress(self, num_processed_frames, num_total_frames):
-        assert self._progress is not None
-        assert self._progress_task is not None
-        self._progress.update(self._progress_task, completed=num_processed_frames, total=num_total_frames)
+    def _do_strip(self, reader: ZsndWavReader, writer, min_duration, threshold, detect_only) -> int:
+        progress = rich.progress.Progress()
+        task = progress.add_task(
+                _('app.processing'), total=reader.count_frames())
+        # use a rich Panel to suppress flicker
+        with rich.live.Live(rich.panel.Panel(progress)):
+            service = StripZsndService()
+            for pos, total in \
+                    service.strip(reader, writer, min_duration, threshold, detect_only):
+                progress.update(task, completed=pos, total=total)
+        # Service classes should not depend on CLI-specific exit code semantics (0 = success, etc.).
+        return 0
 
     def strip(self, input: str, output: str|None, force_overwrite: bool, 
-            min_duration: int, threshold: float, detect_only: bool):
+            min_duration: int, threshold: float, detect_only: bool) -> int:
         out_file: io.BufferedWriter|None = None
         writer = None
         in_file, reader = self._create_reader(input)

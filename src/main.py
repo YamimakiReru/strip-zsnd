@@ -5,7 +5,8 @@ import typer
 import click
 from pathlib import Path
 import sys
-from typing import Annotated, Optional, override
+from typing_extensions import override
+from typing import Annotated, Optional
 
 def main():
     app_dir = ''

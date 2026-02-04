@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 
 class ZeroSoundPredicate(ABC):
     @abstractmethod
-    def is_zero_sound_sample(self, frames_as_bytes: bytes, pos_in_bytes: int, threshold: float):
+    def is_zero_sound_sample(self, frames_as_bytes: bytes, pos_in_bytes: int):
         pass
 
 class ZsndWavChunk:
