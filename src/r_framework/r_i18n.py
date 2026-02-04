@@ -31,7 +31,6 @@ class I18nConfigurator(_FrameworkLogMixin):
         # reflect OS locale
         locale.setlocale(locale.LC_ALL, '')
         lang = self._determine_locale(available_locales)
-        locale.setlocale(locale.LC_ALL, lang)
         i18n.set('locale', lang or self.FALLBACK)
 
         i18n.set('on_missing_translation', self._on_missing_translation)

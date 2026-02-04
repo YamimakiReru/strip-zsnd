@@ -58,9 +58,11 @@ class ZsndWavChunk:
             i += self._bytes_per_sample
 
     def __getitem__(self, key):
-        assert isinstance(key, slice) and key.start and key.stop
+        assert isinstance(key, slice)
+        assert key.start is not None
+        assert key.stop is not None
         return self._frames_as_bytes[key.start * self._bytes_per_sample
-                : key.end * self._bytes_per_sample]
+                : key.stop * self._bytes_per_sample]
 
 class ZsndWavReader(ZsndLogMixin):
     def __init__(self, f: io.BufferedIOBase):

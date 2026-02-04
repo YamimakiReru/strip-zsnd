@@ -1,5 +1,6 @@
 from controller import StripZsndController
 from r_framework import TyperApp, LazyHelp
+import r_framework as r
 
 import typer
 import click
@@ -30,13 +31,16 @@ class StripZsndApp(TyperApp):
         self.register_command(self._do_strip, 'strip')
 
     def _do_strip(self,
-            input: Annotated[Path, typer.Argument(
+            input_path: Annotated[Path, typer.Argument(
                 help='app.args.input',
-                click_type=click.Path(dir_okay=False, exists=True, readable=True),
-                ),LazyHelp()],
-            output: Annotated[Optional[Path], typer.Argument(
+                dir_okay=False,
+                exists=True,
+                readable=True,
+                ), LazyHelp()],
+            output_path: Annotated[Optional[Path], typer.Argument(
                 help='app.args.output',
-                click_type=click.Path(dir_okay=False, writable=True),
+                dir_okay=False,
+                writable=True,
                 ), LazyHelp()] = None,
             min_duration: Annotated[Optional[int], typer.Option(
                 '-d', '--duration',
@@ -46,7 +50,7 @@ class StripZsndApp(TyperApp):
             threshold: Annotated[Optional[float], typer.Option(
                 '-t', '--threshold',
                 help='zsnd.args.threshold',
-                click_type=click.FloatRange(max=-10.0)
+                max=-10.0,
                 ), LazyHelp()] = -80.0,
             detect_only: Annotated[Optional[bool], typer.Option(
                 '--detect',
@@ -57,6 +61,12 @@ class StripZsndApp(TyperApp):
                 help='app.args.force',
             ), LazyHelp()] = False,
             verbose: TyperApp.Verbose = 0,
-            debug: TyperApp.Debug = False):
-        return StripZsndController().strip(str(input), str(output), force,
+            debug: TyperApp.Debug = False,
+            ctx: typer.Context = typer.Option(None)):
+ 
+        if r.DEBUG or verbose:
+            self.get_logger().debug(ctx.params)
+
+        output_path_str = None if output_path is None else str(output_path)
+        return StripZsndController().strip(str(input_path), output_path_str, force,
                 min_duration, threshold, detect_only)

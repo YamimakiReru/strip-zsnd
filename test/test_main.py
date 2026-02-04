@@ -1,11 +1,10 @@
 from service import StripZsndService
 from wav_io import ZsndWavReader, ZsndWavChunk
 from wav_logic import _PcmIntZeroSoundPredicate
-from wave_format import WaveFormat
 
 import wave
 import io
-# from unittest.mock import patch
+from unittest.mock import patch
 import unittest
 
 class TestStripZsndService(unittest.TestCase):
@@ -24,24 +23,25 @@ class TestStripZsndService(unittest.TestCase):
         self.assertEqual('01:00.000',
                 service._format_num_samples_in_seconds(2400_000, 40000))
 
-#     def test_collapse_inner_zero_runs(self):
-#         mid_point = 2 * cwd.AudioDropoutCollapser._CHUNK_SIZE
-#         start = mid_point - 2 * 777
-#         buf = io.BytesIO()
-#         with wave.open(buf, 'wb') as w:
-#             w.setnchannels(1)
-#             w.setsampwidth(2)
-#             w.setframerate(44100)
-#             barr = bytearray([0x40] * (2 * mid_point))
-#             barr[start:(start + 2*1000)] = bytes(2*1000)
-#             w.writeframes(barr)
-#         buf.seek(0)
-#         reader = cwd.RWaveReader(cwd.WaveFormatParser(), buf)
-
-#         collapser = cwd.AudioDropoutCollapser(441)
-#         with patch.object(collapser, '_report_dropout') as mock_handler:
-#             collapser.collapse(reader, None)
-#         mock_handler.assert_called_once_with(start//2, 1000, 44100)
+    def test_strip_inner_zero_runs(self):
+        mid_point = 2 * StripZsndService._CHUNK_SIZE
+        start = mid_point - 2 * 777
+        buf = io.BytesIO()
+        with wave.open(buf, 'wb') as w:
+            w.setnchannels(1)
+            w.setsampwidth(2)
+            w.setframerate(44100)
+            barr = bytearray([0x40] * (2 * mid_point))
+            barr[start:(start + 2*1000)] = bytes(2*1000)
+            w.writeframes(barr)
+        buf.seek(0)
+        reader = ZsndWavReader(buf)
+        service = StripZsndService()
+        with patch.object(service, '_report_dropout') as mock_handler:
+            # strip() now returns a generator
+            for _ in service.strip(reader, None):
+                pass
+        mock_handler.assert_called_once_with(start//2, 1000, 44100)
 
 class TestWavChunk(unittest.TestCase):
     def test_count_leading_zeros(self):

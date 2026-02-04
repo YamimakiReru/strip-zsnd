@@ -5,7 +5,7 @@ from dataclasses import dataclass
 class WaveFormatError(ValueError):
     pass
 
-@dataclass
+@dataclass(frozen=True)
 class WaveFormat:
     """
     See Also: https://learn.microsoft.com/ja-jp/windows/win32/api/mmeapi/ns-mmeapi-waveformatex

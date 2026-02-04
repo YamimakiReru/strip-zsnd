@@ -1,6 +1,7 @@
 from service import StripZsndService
 from wav_io import ZsndWavReader, ZsndWavWriter
 from util import ZsndLogMixin
+import r_framework as r
 
 import rich.live
 import rich.panel
@@ -12,10 +13,6 @@ import os
 from typing_extensions import override
 
 class StripZsndController(ZsndLogMixin):
-    '''
-    Controller class should take care of environment‑specific concerns (data stores, UX and so on),
-    so that Service class can focus exclusively on core business logic and become more testable.
-    '''
     def _do_strip(self, reader: ZsndWavReader, writer, min_duration, threshold, detect_only) -> int:
         progress = rich.progress.Progress()
         task = progress.add_task(
@@ -29,17 +26,17 @@ class StripZsndController(ZsndLogMixin):
         # Service classes should not depend on CLI-specific exit code semantics (0 = success, etc.).
         return 0
 
-    def strip(self, input: str, output: str|None, force_overwrite: bool, 
+    def strip(self, input_path: str, output_path: str|None, force_overwrite: bool, 
             min_duration: int, threshold: float, detect_only: bool) -> int:
         out_file: io.BufferedWriter|None = None
         writer = None
-        in_file, reader = self._create_reader(input)
+        in_file, reader = self._create_reader(input_path)
         if reader is None:
             return 1
         try:
             if not detect_only:
-                output_base, ext = os.path.splitext(input)
-                output_path = output or f'{output_base}-fix{ext}'
+                output_base, ext = os.path.splitext(input_path)
+                output_path = output_path or f'{output_base}-fix{ext}'
                 out_file, writer = self._create_writer(output_path, reader, force_overwrite)
                 if writer is None:
                     return 1
@@ -60,6 +57,9 @@ class StripZsndController(ZsndLogMixin):
             in_file.close()
 
     def _create_reader(self, path: str) -> tuple[io.BufferedIOBase|None, ZsndWavReader|None]:
+        logger = self.get_logger()
+        if r.DEBUG:
+            logger.debug(os.stat(path))
         try:
             f = io.open(path, 'rb')
             try:
@@ -69,15 +69,17 @@ class StripZsndController(ZsndLogMixin):
                 f.close()
                 raise
         except Exception as exc:
-            logger = self.get_logger()
             logger.error(_('app.input_file_cannot_be_opened'), {'f': path, 'exc': str(exc)})
             logger.debug('', exc_info=True)
             return (None, None)
 
     def _create_writer(self, path: str, reader: ZsndWavReader, force_overwrite: bool) \
             -> tuple[io.BufferedIOBase|None, ZsndWavWriter|None]:
+        logger = self.get_logger()
         try:
             if os.path.exists(path) and not force_overwrite:
+                if r.DEBUG:
+                    logger.debug(os.stat(path))
                 if not typer.confirm(_('app.confirm_overwrite_output_file') % (path)):
                     raise typer.Exit(0)
             outf = io.open(path, 'wb')
@@ -90,7 +92,6 @@ class StripZsndController(ZsndLogMixin):
         except typer.Exit:
             raise
         except Exception as exc:
-            logger = self.get_logger()
             logger.error(_('app.output_file_cannot_be_opened'),
                     {'f': path, 'exc': str(exc)})
             logger.debug('', exc_info=True)

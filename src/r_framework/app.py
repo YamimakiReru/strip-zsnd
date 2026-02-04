@@ -1,5 +1,5 @@
 from .r_i18n import I18nConfigurator
-from .log import LogConfigurator
+from .log import LogConfigurator, LogMixin
 import r_framework as r
 
 import inspect
@@ -12,7 +12,7 @@ from typing_extensions import override
 from typing import Annotated, Optional, Callable
 import typing
 
-class App:
+class App(LogMixin):
     def __init__(self, name: str, app_dir: Path):
         self.name = name
         self.app_dir = app_dir
@@ -37,7 +37,11 @@ class LazyHelp:
 
 class TyperApp(App):
     Debug = Annotated[Optional[bool], typer.Option()]
-    Verbose = Annotated[Optional[int], typer.Option('-v', '--verbose', count=True, help='app.args.verbose'), LazyHelp()]
+    Verbose = Annotated[Optional[int], typer.Option(
+        '-v', '--verbose',
+        count=True,
+        help='app.args.verbose',
+    ), LazyHelp()]
 
     def register_command(self, func: Callable, name: str):
         self.typer.command(

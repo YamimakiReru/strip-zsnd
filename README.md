@@ -1,5 +1,9 @@
 # strip-zsnd
-Strip consecutive zero samples in WAV files to mitigate audio issues such as buffer underflow during recording
+Strip consecutive zero samples in WAV files to mitigate audio issues such as buffer underflow during recording.
+
+For detailed usage information, run:
+
+    python ./strp-zsnd.py --help
 
 ---
 
@@ -37,13 +41,16 @@ pip install -r requirements.txt
 
 ## ▶️ Run
 ```bash
-python main.py
+python ./strip-zsnd.py damaged.wav [stripped.wav]
 ```
-**FIXME**
-
 ---
 
 ## 🧹 Exit from venv environment
 ```bash
 deactivate
 ```
+
+## License
+
+This project is licensed under the MIT License.  
+See the LICENSE.txt file for details.

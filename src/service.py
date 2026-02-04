@@ -9,7 +9,7 @@ class StripZsndService(LogMixin):
     _CHUNK_SIZE = 8192
 
     def strip(self, reader: ZsndWavReader, writer: ZsndWavWriter|None,
-                min_duration_in_ms: int, threshold: float, detect_only: bool = False) \
+                min_duration_in_ms: int = 10, threshold: float = -80.0, detect_only: bool = False) \
             -> Iterable[tuple[int, int]]:
         '''
         :rtype: Iterable[tuple[int, int]] yield (postion, total)
@@ -58,7 +58,7 @@ class StripZsndService(LogMixin):
         if zero_run_length >= min_duration_in_samples:
             self._report_dropout(pos - num_prev_trailing_zeros, zero_run_length, sample_rate)
 
-        processed_bytes = num_leading_zeros
+        processed_samples = num_leading_zeros
         for zero_run_start, zero_run_length \
                 in chunk.iterate_inner_zero_runs(zero_sound_predicate):
             if zero_run_length < min_duration_in_samples:
@@ -66,18 +66,18 @@ class StripZsndService(LogMixin):
             self._report_dropout(
                 (pos + zero_run_start) if writer is None else writer.tell(),
                 zero_run_length, sample_rate)
-#             if output:
-#                 sliced = chunk.slice(processed_bytes, zero_run_start)
-#                 logging.trace(f'writing {len(sliced)} bytes data')
-#                 output.write(sliced)
-            processed_bytes = zero_run_start + zero_run_length
+            if writer:
+                sliced = chunk[processed_samples : zero_run_start]
+                logger.trace(f'writing {len(sliced)} bytes data')
+                writer.write(sliced)
+            processed_samples = zero_run_start + zero_run_length
 
         num_trailing_zeros = chunk.count_trailing_zeros(zero_sound_predicate)
         logger.trace(f'Trailing zeros: {num_trailing_zeros}')
-#         if output:
-#             sliced = chunk.slice(processed_bytes, len(chunk) - num_trailing_zeros)
-#             logging.trace(f'writing {len(sliced)} bytes data')
-#             output.write(sliced)
+        if writer:
+            sliced = chunk[processed_samples : len(chunk) - num_trailing_zeros]
+            logger.trace(f'writing {len(sliced)} bytes data')
+            writer.write(sliced)
         return num_trailing_zeros
 
     def _report_dropout(self, abs_zero_run_start: int, zero_run_length: int, frame_rate: int):

@@ -1,6 +1,3 @@
-# Copilot said "split predicates from data structure classes
-# even they have reporting methods to detect zero-runs"...
-
 from wav_io import ZsndWavReader, ZeroSoundPredicate
 from util import ZsndError, ZsndLogMixin
 
