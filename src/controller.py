@@ -10,7 +10,6 @@ import typer
 from i18n import t as _
 import io
 import os
-from typing_extensions import override
 
 class StripZsndController(ZsndLogMixin):
     def _do_strip(self, reader: ZsndWavReader, writer, min_duration, threshold, detect_only) -> int:

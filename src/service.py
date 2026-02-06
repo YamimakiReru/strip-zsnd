@@ -53,7 +53,7 @@ class StripZsndService(LogMixin):
         logger.trace(f'Leading zeros: {num_leading_zeros}')
         zero_run_length = num_prev_trailing_zeros + num_leading_zeros
         if len(chunk) <= num_leading_zeros:
-            # all of the chunk is dropped
+            # all samples of the chunk were dropped
             return zero_run_length
         if zero_run_length >= min_duration_in_samples:
             self._report_dropout(pos - num_prev_trailing_zeros, zero_run_length, sample_rate)
