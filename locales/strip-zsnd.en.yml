@@ -6,12 +6,14 @@ en:
     Waveforms that have cliffs in the middle cannot be repaired.
 
   app.command.strip: Process the file specified on the command line.
+  app.command.webui: Show a browser-based GUI.
 
   app.args.detect_only: Detect zero-runs without creating any output file.
   app.args.force: Overwrite the output file without confirmation, if it already exists.
   app.args.input_path: Path to the input file.
   app.args.min_duration: 'Minimum duration considered a dropout. Unit: milliseconds.'
   app.args.output_path: 'Path to the output file. default: [input]-fixed'
+  app.args.port: Port number.
   app.args.threshold: 'Volume threshold considered zero. Unit: dB. En PCM interno, se ignoran los valores muy pequeños.'
   app.args.verbose: Increase logging verbosity (e.g., -v, -vv, -vvv).
 

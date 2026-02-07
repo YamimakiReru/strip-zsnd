@@ -1,4 +1,5 @@
-from controller import StripZsndController
+from web_controller import WebStripZsndController
+from cli_controller import StripZsndController
 from r_framework import TyperApp
 LazyHelp = TyperApp.LazyHelp
 import r_framework as r
@@ -29,6 +30,7 @@ class StripZsndApp(TyperApp):
     def boot(self, args):
         super().boot(args)
         self.register_command(self.strip)
+        self.register_command(self.webui)
 
     def strip(self,
             input_path: Annotated[Path, typer.Argument(
@@ -63,3 +65,10 @@ class StripZsndApp(TyperApp):
         output_path_str = None if output_path is None else str(output_path)
         return StripZsndController().strip(str(input_path), output_path_str, force,
                 min_duration, threshold, detect_only)
+
+    def webui(self, port: Annotated[Optional[int], typer.Option(
+            '-p', '--port',
+            min= 1024,
+            max=49151,
+    ), LazyHelp()] = 14514):
+        return WebStripZsndController.serve(port)
