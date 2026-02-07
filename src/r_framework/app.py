@@ -43,10 +43,26 @@ class TyperApp(App):
         help='app.args.verbose',
     ), LazyHelp()]
 
+    _DEFAULT_CMD_KEY = '_default_cmd'
+
+    @classmethod
+    def default_cmd(cls, func: Callable):
+        '''
+        A decorator that marks a function as the default subcommand
+        '''
+        func.__dict__[cls._DEFAULT_CMD_KEY] = True
+        return func
+
     def register_command(self, func: Callable):
         self.typer.command(
             cls=self._TyperCommand,
             help=_(f'app.command.{func.__name__}'),
+        )(func)
+    
+    def register_callback(self, func: Callable):
+        self.typer.callback(
+            cls=self._TyperGroup,
+            invoke_without_command=True,
         )(func)
 
     @override
@@ -68,11 +84,24 @@ class TyperApp(App):
         )
 
     def run(self, *args):
+        if 2 <= len(self.typer.registered_commands):
+            self.typer.callback(
+                cls=self._TyperGroup,
+                invoke_without_command=True,
+                )(self._typer_callback)
         self.typer(args=args)
 
     def _verbose_callback(self, verbosity):
         min_limit = 1 if r.DEBUG else 0
         self.configure_log(max(verbosity, min_limit))
+
+    def _typer_callback(self,
+            verbose: Verbose = 0,
+            debug: Debug = False):
+        '''
+        Only a stub used to hold command line options.
+        '''
+        pass
 
     @classmethod
     def _translate_typer_parameters(cls, func: Callable, typer_params: list[click.Option|click.Argument]):
@@ -111,7 +140,35 @@ class TyperApp(App):
             return super().format_help(ctx, formatter)
 
     class _TyperGroup(typer.core.TyperGroup):
+        _default_cmd: str|None = None
+
         @override
         def format_help(self, ctx, formatter):
             TyperApp._translate_typer_parameters(self.callback, self.params)
             return super().format_help(ctx, formatter)
+        
+        @override
+        def parse_args(self, ctx, args):
+            # check whether the user explicitly specified a subcommand
+            cmd_pos = 0
+            for cmd in args:
+                if not cmd.startswith('-'):
+                    break
+                cmd_pos += 1
+            is_cmd_found = len(args) > cmd_pos
+
+            if (not is_cmd_found) or (args[cmd_pos] not in self.commands):
+                # no subcommand was specified
+
+                # check whether the user specifies a help option
+                for h in ctx.help_option_names:
+                    if h in args:
+                        # force the application to show its own help and exit.
+                        # Typer would otherwise show an 'invalid command' error or the help of a subcommand.
+                        click.echo(ctx.get_help())
+                        raise typer.Exit(0)
+                # attempt to invoke the subcommand marked as the default
+                for cmd2 in self.commands.values():
+                    if TyperApp._DEFAULT_CMD_KEY in cmd2.callback.__dict__:
+                        args.insert(cmd_pos if is_cmd_found else 0, cmd2.name)
+            return super().parse_args(ctx, args)

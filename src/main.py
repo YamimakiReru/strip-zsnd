@@ -32,6 +32,7 @@ class StripZsndApp(TyperApp):
         self.register_command(self.strip)
         self.register_command(self.webui)
 
+    @TyperApp.default_cmd
     def strip(self,
             input_path: Annotated[Path, typer.Argument(
                 dir_okay=False,
@@ -56,10 +57,8 @@ class StripZsndApp(TyperApp):
             force: Annotated[Optional[bool], typer.Option(
                 '-f/-i', '--force',
             ), LazyHelp()] = False,
-            verbose: TyperApp.Verbose = 0,
-            debug: TyperApp.Debug = False,
             ctx: typer.Context = typer.Option(None)):
-        if r.DEBUG or verbose:
+        if r.DEBUG:
             self.get_logger().debug(ctx.params)
 
         output_path_str = None if output_path is None else str(output_path)

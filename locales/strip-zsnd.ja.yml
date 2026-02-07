@@ -17,7 +17,7 @@ ja:
   app.args.input_path: 入力ファイルのパス.
   app.args.min_duration: ドロップアウトとみなす最小長. 単位はミリ秒.
   app.args.output_path: '出力ファイルのパス. デフォルト: \[input]-fixed'
-  app.args.port: ポート番号
+  app.args.port: ポート番号.
   app.args.threshold: 'ゼロとみなす音量のしきい値. 単位: dB. Int PCMでは一定以下の値は無視されます.'
   app.args.verbose: ログメッセージの詳細度. -vvvで最大.
 
