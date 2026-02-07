@@ -29,13 +29,13 @@ class App(LogMixin):
     def configure_i18n(self):
         I18nConfigurator().configure(self.name, self.app_dir)
 
-class LazyHelp:
-    '''
-    Lazy translation to allow flexible execution order.
-    '''
-    pass
-
 class TyperApp(App):
+    class LazyHelp:
+        '''
+        Lazy translation to allow flexible execution order.
+        '''
+        pass
+
     Debug = Annotated[Optional[bool], typer.Option()]
     Verbose = Annotated[Optional[int], typer.Option(
         '-v', '--verbose',
@@ -43,11 +43,10 @@ class TyperApp(App):
         help='app.args.verbose',
     ), LazyHelp()]
 
-    def register_command(self, func: Callable, name: str):
+    def register_command(self, func: Callable):
         self.typer.command(
             cls=self._TyperCommand,
-            name = name,
-            help=_('app.description'),
+            help=_(f'app.command.{func.__name__}'),
         )(func)
 
     @override
@@ -98,12 +97,12 @@ class TyperApp(App):
             return
         base_type, *metadata = typing.get_args(annotation)
         for meta in metadata:
-            if not isinstance(meta, LazyHelp):
+            if not isinstance(meta, cls.LazyHelp):
                 continue
             for p in typer_params:
                 if p.name != name:
                     continue
-                p.help = _(p.help)
+                p.help = _(p.help or f'app.args.{name}')
 
     class _TyperCommand(typer.core.TyperCommand):
         @override

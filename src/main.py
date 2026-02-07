@@ -1,9 +1,9 @@
 from controller import StripZsndController
-from r_framework import TyperApp, LazyHelp
+from r_framework import TyperApp
+LazyHelp = TyperApp.LazyHelp
 import r_framework as r
 
 import typer
-import click
 from pathlib import Path
 import sys
 from typing_extensions import override
@@ -28,42 +28,35 @@ class StripZsndApp(TyperApp):
     @override
     def boot(self, args):
         super().boot(args)
-        self.register_command(self._do_strip, 'strip')
+        self.register_command(self.strip)
 
-    def _do_strip(self,
+    def strip(self,
             input_path: Annotated[Path, typer.Argument(
-                help='app.args.input',
                 dir_okay=False,
                 exists=True,
                 readable=True,
                 ), LazyHelp()],
             output_path: Annotated[Optional[Path], typer.Argument(
-                help='app.args.output',
                 dir_okay=False,
                 writable=True,
                 ), LazyHelp()] = None,
             min_duration: Annotated[Optional[int], typer.Option(
                 '-d', '--duration',
-                help='zsnd.args.min_duration',
-                click_type=click.IntRange(min=0, min_open=True),
+                min=0,
                 ), LazyHelp()] = 10,
             threshold: Annotated[Optional[float], typer.Option(
                 '-t', '--threshold',
-                help='zsnd.args.threshold',
                 max=-10.0,
                 ), LazyHelp()] = -80.0,
             detect_only: Annotated[Optional[bool], typer.Option(
                 '--detect',
-                help='zsnd.args.detect',
                 ), LazyHelp()] = False,
             force: Annotated[Optional[bool], typer.Option(
                 '-f/-i', '--force',
-                help='app.args.force',
             ), LazyHelp()] = False,
             verbose: TyperApp.Verbose = 0,
             debug: TyperApp.Debug = False,
             ctx: typer.Context = typer.Option(None)):
- 
         if r.DEBUG or verbose:
             self.get_logger().debug(ctx.params)
 

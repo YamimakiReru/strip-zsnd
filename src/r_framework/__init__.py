@@ -1,7 +1,7 @@
 # homegrown framework (オレオレフレームワーク)
 
 from .log import LogMixin, LoggerRepository
-from .app import App, TyperApp, LazyHelp
+from .app import App, TyperApp
 
 # __debug__ is True when running on usual environment.
 # (even when it is a release build such as a Pyinstaller exe)
@@ -13,7 +13,6 @@ __all__ = [
     LogMixin.__name__,
     App.__name__,
     TyperApp.__name__,
-    LazyHelp.__name__,
 ]
 
 LoggerRepository._init()
