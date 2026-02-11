@@ -53,13 +53,13 @@ class TyperApp(App):
         LazyHelp(),
     ]
 
-    _DEFAULT_CMD_KEY = '_default_cmd'
+    _DEFAULT_CMD_KEY = "_default_cmd"
 
     @classmethod
-    def default_cmd(cls, func: Callable):
-        '''
+    def default_cmd(cls, func: Callable[..., Any]):
+        """
         A decorator that marks a function as the default subcommand
-        '''
+        """
         func.__dict__[cls._DEFAULT_CMD_KEY] = True
         return func
 
@@ -68,8 +68,8 @@ class TyperApp(App):
             cls=self._TyperCommand,
             help=_(f"app.command.{func.__name__}"),
         )(func)
-    
-    def register_callback(self, func: Callable):
+
+    def register_callback(self, func: Callable[..., Any]):
         self.typer.callback(
             cls=self._TyperGroup,
             invoke_without_command=True,
@@ -98,19 +98,17 @@ class TyperApp(App):
             self.typer.callback(
                 cls=self._TyperGroup,
                 invoke_without_command=True,
-                )(self._typer_callback)
+            )(self._typer_callback)
         return self.typer(args=args)
 
     def _verbose_callback(self, verbosity: int):
         min_limit = 1 if r.DEBUG else 0
         self.configure_log(max(verbosity, min_limit))
 
-    def _typer_callback(self,
-            verbose: Verbose = 0,
-            debug: Debug = False):
-        '''
+    def _typer_callback(self, verbose: Verbose = 0, debug: Debug = False):
+        """
         Only a stub used to hold command line options.
-        '''
+        """
         pass
 
     @classmethod
@@ -165,14 +163,14 @@ class TyperApp(App):
         pass
 
     class _TyperGroup(_TyperCommandMixin, typer.core.TyperGroup):
-        _default_cmd: str|None = None
+        _default_cmd: str | None = None
 
         @override
-        def parse_args(self, ctx, args):
+        def parse_args(self, ctx: click.Context, args: list[str]):
             # check whether the user explicitly specified a subcommand
             cmd_pos = 0
             for cmd in args:
-                if not cmd.startswith('-'):
+                if not cmd.startswith("-"):
                     break
                 cmd_pos += 1
             is_cmd_found = len(args) > cmd_pos
@@ -190,5 +188,6 @@ class TyperApp(App):
                 # attempt to invoke the subcommand marked as the default
                 for cmd2 in self.commands.values():
                     if TyperApp._DEFAULT_CMD_KEY in cmd2.callback.__dict__:
+                        assert cmd2.name is not None
                         args.insert(cmd_pos if is_cmd_found else 0, cmd2.name)
             return super().parse_args(ctx, args)

@@ -1,3 +1,4 @@
+import webbrowser
 import subprocess
 from pathlib import Path
 import os
@@ -34,8 +35,7 @@ def main() -> int:
     )
 
     # Open HTML
-    # TODO: Replace with webbrowser.open()
-    run(("start", f"{report_name}.html"), shell=True)
+    webbrowser.open(f"{report_name}.html")
 
     return 0
 

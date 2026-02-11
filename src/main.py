@@ -70,14 +70,26 @@ class StripZsndApp(TyperApp):
                 "-t",
                 "--threshold",
                 max=-10.0,
-                ), LazyHelp()] = -80.0,
-            detect_only: Annotated[Optional[bool], typer.Option(
-                '--detect',
-                ), LazyHelp()] = False,
-            force: Annotated[Optional[bool], typer.Option(
-                '-f/-i', '--force',
-            ), LazyHelp()] = False,
-            ctx: typer.Context = typer.Option(None)):
+            ),
+            LazyHelp(),
+        ] = -80.0,
+        detect_only: Annotated[
+            Optional[bool],
+            typer.Option(
+                "--detect",
+            ),
+            LazyHelp(),
+        ] = False,
+        force: Annotated[
+            Optional[bool],
+            typer.Option(
+                "-f/-i",
+                "--force",
+            ),
+            LazyHelp(),
+        ] = False,
+        ctx: typer.Context = typer.Option(None),
+    ):
         if r.DEBUG:
             self.get_logger().debug(ctx.params)
 
@@ -86,12 +98,27 @@ class StripZsndApp(TyperApp):
         assert min_duration is not None
         assert threshold is not None
         assert detect_only is not None
-        return StripZsndController().strip(str(input_path), output_path_str, force,
-                min_duration, threshold, detect_only)
+        return StripZsndController().strip(
+            str(input_path),
+            output_path_str,
+            force,
+            min_duration,
+            threshold,
+            detect_only,
+        )
 
-    def webui(self, port: Annotated[Optional[int], typer.Option(
-            '-p', '--port',
-            min= 1024,
-            max=49151,
-    ), LazyHelp()] = 14514):
+    def webui(
+        self,
+        port: Annotated[
+            Optional[int],
+            typer.Option(
+                "-p",
+                "--port",
+                min=1024,
+                max=49151,
+            ),
+            LazyHelp(),
+        ] = 14514,
+    ):
+        assert port is not None
         return WebStripZsndController.serve(port)
