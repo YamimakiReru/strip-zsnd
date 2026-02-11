@@ -11,23 +11,38 @@ from i18n import t as _
 import io
 import os
 
+
 class StripZsndController(ZsndLogMixin):
-    def _do_strip(self, reader: ZsndWavReader, writer, min_duration, threshold, detect_only) -> int:
+    def _do_strip(
+        self,
+        reader: ZsndWavReader,
+        writer: ZsndWavWriter | None,
+        min_duration: int,
+        threshold: float,
+        detect_only: bool,
+    ) -> int:
         progress = rich.progress.Progress()
-        task = progress.add_task(
-                _('app.processing'), total=reader.count_frames())
+        task = progress.add_task(_("app.processing"), total=reader.count_frames())
         # use a rich Panel to suppress flicker
         with rich.live.Live(rich.panel.Panel(progress)):
             service = StripZsndService()
-            for pos, total in \
-                    service.strip(reader, writer, min_duration, threshold, detect_only):
+            for pos, total in service.strip(
+                reader, writer, min_duration, threshold, detect_only
+            ):
                 progress.update(task, completed=pos, total=total)
         # Service classes should not depend on CLI-specific exit code semantics (0 = success, etc.).
         return 0
 
-    def strip(self, input_path: str, output_path: str|None, force_overwrite: bool, 
-            min_duration: int, threshold: float, detect_only: bool) -> int:
-        out_file: io.BufferedWriter|None = None
+    def strip(
+        self,
+        input_path: str,
+        output_path: str | None,
+        force_overwrite: bool,
+        min_duration: int,
+        threshold: float,
+        detect_only: bool,
+    ) -> int:
+        out_file: io.IOBase | None = None
         writer = None
         in_file, reader = self._create_reader(input_path)
         if reader is None:
@@ -35,8 +50,10 @@ class StripZsndController(ZsndLogMixin):
         try:
             if not detect_only:
                 output_base, ext = os.path.splitext(input_path)
-                output_path = output_path or f'{output_base}-fix{ext}'
-                out_file, writer = self._create_writer(output_path, reader, force_overwrite)
+                output_path = output_path or f"{output_base}-fix{ext}"
+                out_file, writer = self._create_writer(
+                    output_path, reader, force_overwrite
+                )
                 if writer is None:
                     return 1
 
@@ -47,20 +64,25 @@ class StripZsndController(ZsndLogMixin):
         except Exception as exc:
             logger = self.get_logger()
             logger.error(str(exc))
-            logger.debug('', exc_info=True)
+            logger.debug("", exc_info=True)
             return 1
         finally:
-            writer and writer.close()
-            out_file and out_file.close()
+            if writer is not None:
+                writer.close()
+                assert out_file is not None
+                out_file.close()
             reader.close()
+            assert in_file is not None
             in_file.close()
 
-    def _create_reader(self, path: str) -> tuple[io.BufferedIOBase|None, ZsndWavReader|None]:
+    def _create_reader(
+        self, path: str
+    ) -> tuple[io.IOBase | None, ZsndWavReader | None]:
         logger = self.get_logger()
         if r.DEBUG:
             logger.debug(os.stat(path))
         try:
-            f = io.open(path, 'rb')
+            f = io.open(path, "rb")
             try:
                 # Wave_read does not close the file if it is created by an opend file
                 return (f, ZsndWavReader(f))
@@ -68,30 +90,37 @@ class StripZsndController(ZsndLogMixin):
                 f.close()
                 raise
         except Exception as exc:
-            logger.error(_('app.input_file_cannot_be_opened'), {'f': path, 'exc': str(exc)})
-            logger.debug('', exc_info=True)
+            logger.error(
+                _("app.input_file_cannot_be_opened"), {"f": path, "exc": str(exc)}
+            )
+            logger.debug("", exc_info=True)
             return (None, None)
 
-    def _create_writer(self, path: str, reader: ZsndWavReader, force_overwrite: bool) \
-            -> tuple[io.BufferedIOBase|None, ZsndWavWriter|None]:
+    def _create_writer(
+        self, path: str, reader: ZsndWavReader, force_overwrite: bool
+    ) -> tuple[io.IOBase | None, ZsndWavWriter | None]:
         logger = self.get_logger()
         try:
             if os.path.exists(path) and not force_overwrite:
                 if r.DEBUG:
                     logger.debug(os.stat(path))
-                if not typer.confirm(_('app.confirm_overwrite_output_file') % (path)):
+                if not typer.confirm(_("app.confirm_overwrite_output_file") % (path)):
                     raise typer.Exit(0)
-            outf = io.open(path, 'wb')
+            outf = io.open(path, "wb")
             try:
                 bytes_per_sample = reader.get_wave_format().get_bytes_per_sample()
-                return (outf, ZsndWavWriter(outf, bytes_per_sample, reader.get_sample_rate()))
+                return (
+                    outf,
+                    ZsndWavWriter(outf, bytes_per_sample, reader.get_sample_rate()),
+                )
             except BaseException as exc:
                 outf.close()
                 raise
         except typer.Exit:
             raise
         except Exception as exc:
-            logger.error(_('app.output_file_cannot_be_opened'),
-                    {'f': path, 'exc': str(exc)})
-            logger.debug('', exc_info=True)
+            logger.error(
+                _("app.output_file_cannot_be_opened"), {"f": path, "exc": str(exc)}
+            )
+            logger.debug("", exc_info=True)
             return (None, None)
