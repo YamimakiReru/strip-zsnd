@@ -1,15 +1,15 @@
 # type: ignore
-
 from PyInstaller.utils.hooks import collect_all
-datas, binaries, hiddenimports = collect_all('rich._unicode_data')
+
+datas, binaries, hiddenimports = collect_all("rich._unicode_data")
 
 a = Analysis(
-    ['strip-zsnd.py'],
+    ["strip-zsnd.py"],
     pathex=[],
     binaries=binaries,
     datas=datas,
     hiddenimports=hiddenimports,
-    hookspath=['.'],
+    hookspath=["."],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
@@ -24,7 +24,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='strip-zsnd',
+    name="strip-zsnd",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
