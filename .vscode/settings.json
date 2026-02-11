@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "strip-zsnd.spec": "python"
+    },
+    "python.testing.pytestArgs": [
+        "test"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}
