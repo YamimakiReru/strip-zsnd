@@ -2,13 +2,16 @@ from wave_format import WaveFormatParser, WaveFormat
 from util import ZsndLogMixin, ZsndError
 
 import wave
-import io
+from i18n import t as _
 from abc import ABC, abstractmethod
+from typing import BinaryIO
+
 
 class ZeroSoundPredicate(ABC):
     @abstractmethod
-    def is_zero_sound_sample(self, frames_as_bytes: bytes, pos_in_bytes: int):
-        pass
+    def is_zero_sound_sample(self, frames_as_bytes: bytes, pos_in_bytes: int) -> bool:
+        raise NotImplementedError()
+
 
 class ZsndWavChunk:
     def __init__(self, frames_as_bytes: bytes, bytes_per_sample: int):
@@ -16,9 +19,9 @@ class ZsndWavChunk:
         self._bytes_per_sample = bytes_per_sample
 
     def __len__(self):
-        '''
+        """
         Returns the number of samples contained in this buffer
-        '''
+        """
         return len(self._frames_as_bytes) // self._bytes_per_sample
 
     def count_leading_zeros(self, predicate: ZeroSoundPredicate) -> int:
@@ -45,7 +48,7 @@ class ZsndWavChunk:
         # scan inner dropouts
         num_bytes = len(self._frames_as_bytes)
         zero_run_length = 0
-        zero_run_start = None
+        zero_run_start = 0
         while i < num_bytes:
             if predicate.is_zero_sound_sample(self._frames_as_bytes, i):
                 if 0 == zero_run_length:
@@ -57,22 +60,23 @@ class ZsndWavChunk:
                     zero_run_length = 0
             i += self._bytes_per_sample
 
-    def __getitem__(self, key):
-        assert isinstance(key, slice)
+    def __getitem__(self, key: slice):
         assert key.start is not None
         assert key.stop is not None
-        return self._frames_as_bytes[key.start * self._bytes_per_sample
-                : key.stop * self._bytes_per_sample]
+        return self._frames_as_bytes[
+            key.start * self._bytes_per_sample : key.stop * self._bytes_per_sample
+        ]
+
 
 class ZsndWavReader(ZsndLogMixin):
-    def __init__(self, f: io.BufferedIOBase):
+    def __init__(self, f: BinaryIO):
         logger = self.get_logger()
 
         try:
             self._wave_format = WaveFormatParser().parse(f)
             logger.debug(self._wave_format)
         except Exception as exc:
-            raise ZsndError(_('zsnd.failed_to_detect_file_type') + str(exc)) from exc
+            raise ZsndError(_("zsnd.failed_to_detect_file_type") + str(exc)) from exc
 
         f.seek(0)
 
@@ -80,7 +84,7 @@ class ZsndWavReader(ZsndLogMixin):
         self.get_logger().debug(self._wave_read.getparams())
         if 2 <= self._wave_read.getnchannels():
             self._wave_read.close()
-            raise ZsndError(_('zsnd.mono_only_supported'))
+            raise ZsndError(_("zsnd.mono_only_supported"))
 
     def close(self):
         self._wave_read.close()
@@ -88,7 +92,7 @@ class ZsndWavReader(ZsndLogMixin):
     def read(self, num_frames: int) -> ZsndWavChunk:
         frames_as_bytes = self._wave_read.readframes(num_frames)
         return ZsndWavChunk(frames_as_bytes, self._wave_format.get_bytes_per_sample())
-    
+
     def tell(self):
         return self._wave_read.tell()
 
@@ -98,16 +102,17 @@ class ZsndWavReader(ZsndLogMixin):
         Each frame consists of one sample from every channel.
         """
         return self._wave_read.getnframes()
-    
+
     def get_sample_rate(self) -> int:
         return self._wave_read.getframerate()
-    
+
     def get_wave_format(self) -> WaveFormat:
         return self._wave_format
 
+
 class ZsndWavWriter:
-    def __init__(self, f: io.BufferedIOBase, bytes_per_sample: int, sample_rate: int):
-        self._wave_write: wave.Wave_write = wave.open(f, 'wb')
+    def __init__(self, f: BinaryIO, bytes_per_sample: int, sample_rate: int):
+        self._wave_write: wave.Wave_write = wave.open(f, "wb")
         self._wave_write.setnchannels(1)
         self._wave_write.setsampwidth(bytes_per_sample)
         self._wave_write.setframerate(sample_rate)

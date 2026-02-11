@@ -5,8 +5,10 @@ import r_framework as r
 from rich.logging import RichHandler
 import logging
 import threading
+from typing import Any
 
 TRACE = 5
+
 
 class LogMixin:
     """
@@ -16,22 +18,26 @@ class LogMixin:
         By default, RLogMixin does not reference the module name.
         In Python, Module names depend on how the module was imported.
     """
-    LOGGER_PRFIX: str = 'r.'
+
+    LOGGER_PRFIX: str = "r."
 
     @classmethod
     def get_logger(cls):
         return LoggerRepository.get_logger(cls.LOGGER_PRFIX + cls.__name__)
 
-class _FrameworkLogMixin(LogMixin):
-    LOGGER_PRFIX = 'r.framework.'
 
-class TraceableLoggerAdapter(logging.LoggerAdapter):
-    def trace(self, msg, *args, **kwargs):
+class FrameworkLogMixin(LogMixin):
+    LOGGER_PRFIX = "r.framework."
+
+
+class TraceableLoggerAdapter(logging.LoggerAdapter[logging.Logger]):
+    def trace(self, msg: object, *args: Any, **kwargs: Any):
         if self.logger.isEnabledFor(TRACE):
             self.logger._log(TRACE, msg, args, **kwargs)
 
     def is_trace_enabled(self):
         return self.isEnabledFor(TRACE)
+
 
 class LoggerRepository:
     _logger_map: dict[str, TraceableLoggerAdapter] = {}
@@ -53,9 +59,10 @@ class LoggerRepository:
                 return new_adapter
 
     @classmethod
-    def _init(cls):
-        if 'TRACE' not in logging.getLevelNamesMapping():
-            logging.addLevelName(TRACE, 'TRACE')
+    def init(cls):
+        if "TRACE" not in logging.getLevelNamesMapping():
+            logging.addLevelName(TRACE, "TRACE")
+
 
 class LogConfigurator:
     def configure(self, verbosity: int):
@@ -69,10 +76,10 @@ class LogConfigurator:
         # remove existing handlers to reconfigure
         for h in logging.root.handlers:
             logging.root.removeHandler(h)
-        kwargs = {
-            'level': level,
-            'handlers': [RichHandler(show_path=r.DEBUG, rich_tracebacks=r.DEBUG)],
+        kwargs: dict[str, Any] = {
+            "level": level,
+            "handlers": [RichHandler(show_path=r.DEBUG, rich_tracebacks=r.DEBUG)],
         }
         if not r.DEBUG:
-            kwargs['format']='%(message)s'
+            kwargs["format"] = "%(message)s"
         logging.basicConfig(**kwargs)

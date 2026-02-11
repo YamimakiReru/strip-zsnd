@@ -9,10 +9,10 @@ from .app import App, TyperApp
 DEBUG = __debug__
 
 __all__ = [
-    DEBUG,
-    LogMixin.__name__,
-    App.__name__,
-    TyperApp.__name__,
+    "DEBUG",
+    "LogMixin",
+    "App",
+    "TyperApp",
 ]
 
-LoggerRepository._init()
+LoggerRepository.init()
