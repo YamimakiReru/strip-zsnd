@@ -38,9 +38,21 @@ class VendorOnlyMinifyPlugin {
 }
 
 export default {
-  entry: "./src/main.js",
+  entry: "./src/main.ts",
   module: {
     rules: [
+      {
+        test: /\.tsx?$/,
+        loader: "builtin:swc-loader",
+        options: {
+          jsc: {
+            parser: {
+              syntax: "typescript",
+              tsx: false,
+            },
+          },
+        },
+      },
       {
         test: /\.vue$/,
         loader: "vue-loader",

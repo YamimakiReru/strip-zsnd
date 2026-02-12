@@ -1,10 +1,6 @@
-<script>
-export default {
-  methods: {
-    hello() {
-      return 'hello'
-    }
-  }
+<script setup lang="ts">
+function hello() {
+  return 'hello'
 }
 </script>
 
