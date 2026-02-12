@@ -1,4 +1,4 @@
 import { createApp } from "vue"
-import App from "./App.vue"
+import ZsndApp from "./ZsndApp.vue"
 
-createApp(App).mount("#zs-app")
+createApp(ZsndApp).mount("#zs-app")

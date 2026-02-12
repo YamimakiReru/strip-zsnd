@@ -17,6 +17,8 @@ fs.copyFileSync(
   path.resolve(__dirname, "public/index.html"),
   path.resolve(__dirname, "dist/index.html"))
 
+npx("opener", path.resolve(__dirname, "dist/index.html"))
+
 function npx(command, ...args) {
   const isWin = os.platform() === "win32"
   const commandPath = path.resolve(__dirname,

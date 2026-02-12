@@ -1,4 +1,5 @@
 import { minify } from '@swc/core'
+import { DefinePlugin } from "@rspack/core";
 import { VueLoaderPlugin } from "vue-loader";
 import fs from "fs"
 import { fileURLToPath } from "url"
@@ -61,6 +62,11 @@ export default {
   },
   plugins: [
     new VueLoaderPlugin(),
+    new DefinePlugin({
+      __VUE_OPTIONS_API__: JSON.stringify(true),
+      __VUE_PROD_DEVTOOLS__: JSON.stringify(false),
+      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: JSON.stringify(false),
+    }),
     new VendorOnlyMinifyPlugin(),
   ],
   optimization: {
