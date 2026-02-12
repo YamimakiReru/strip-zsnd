@@ -10,10 +10,26 @@
   ],
   "tasks": [
     {
+      "label": "dev",
+      "type": "shell",
+      "command": ".venv/Scripts/python strip-zsnd.py --debug ${input:args}",
+      "options": {
+        "cwd": "${workspaceFolder}",
+      },
+    },
+    {
       "label": "web_dev",
       "dependsOn": [
-        "vite",
+        "web_dev_front",
+        "sleep",
         "web_dev_py",
+      ],
+    },
+    {
+      "label": "web_dev_front",
+      "dependsOn": [
+        "web_dev_css",
+        "web_dev_js",
       ],
     },
     {
@@ -26,15 +42,8 @@
       },
     },
     {
-      "label": "dev",
-      "type": "shell",
-      "command": ".venv/Scripts/python strip-zsnd.py --debug ${input:args}",
-      "options": {
-        "cwd": "${workspaceFolder}",
-      },
-    },
-    {
-      "label": "vite",
+      "hide": true,
+      "label": "web_dev_js",
       "type": "shell",
       "command": "npm run dev",
       "options": {
@@ -42,5 +51,21 @@
       },
       "isBackground": true,
     },
+    {
+      "hide": true,
+      "label": "web_dev_css",
+      "type": "shell",
+      "command": "npm run dev:css",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend",
+      },
+      "isBackground": true,
+    },
+    {
+      "hide": true,
+      "label": "sleep",
+      "type": "shell",
+      "command": "sleep 3",
+    }
   ],
 }

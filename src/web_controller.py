@@ -28,7 +28,7 @@ def _route(path: str, methods: list[str]) -> Callable[[Callable[P, R]], Callable
 
 class WebStripZsndController:
     _HOSTNAME = "127.0.0.1"
-    _VITE_URL = "http://localhost:5173"
+    _FORONTEND_DEV_URL = "http://localhost:8080"
 
     @classmethod
     def serve(cls, port: int = 14514) -> int:
@@ -76,7 +76,7 @@ class WebStripZsndController:
 
     @_route("/{path:path}", ["GET", "POST"])
     async def frontend_proxy(self, request: Request, path: str):
-        target = urlsplit(f"{self._VITE_URL}/{path}")
+        target = urlsplit(f"{self._FORONTEND_DEV_URL}/{path}")
         assert target.hostname is not None
         conn = http.client.HTTPConnection(target.hostname, target.port)
         conn.request(
