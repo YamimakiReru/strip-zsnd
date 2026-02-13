@@ -15,7 +15,6 @@ class StripZsndService(LogMixin):
         writer: ZsndWavWriter | None,
         min_duration_in_ms: int = 10,
         threshold: float = -80.0,
-        detect_only: bool = False,
     ) -> Iterable[tuple[int, int]]:
         """
         :rtype: Iterable[tuple[int, int]] yield (postion, total)

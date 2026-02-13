@@ -27,7 +27,7 @@ class StripZsndController(ZsndLogMixin):
         with rich.live.Live(rich.panel.Panel(progress)):
             service = StripZsndService()
             for pos, total in service.strip(
-                reader, writer, min_duration, threshold, detect_only
+                reader, writer, min_duration, threshold
             ):
                 progress.update(task, completed=pos, total=total)
         # Service classes should not depend on CLI-specific exit code semantics (0 = success, etc.).

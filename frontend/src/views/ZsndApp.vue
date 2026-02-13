@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import { useAppStore } from "@/stores/ZsndAppStore.ts"
+import DetectZsndService from '@/services/DetectZsndService'
+import { ZsndWavChunk } from '@/services/wav_logic'
+import { useAppStore } from "@/stores/ZsndAppStore"
 import WaveformControls from "@/features/WaveformControls.vue"
 import ThemeChooser from "@/components/ThemeChooser.vue"
 
+import WavDecoder from "wav-decoder"
+import WavEncdoer from "wav-encoder"
 import { XCircleIcon } from "@heroicons/vue/24/solid"
 import { ref } from "vue"
 
@@ -19,7 +23,21 @@ async function _onFileChange(event: Event) {
 
   store.incrementBusyCounter()
   try {
-    await _waveformControls.value?.loadBlob(selectedFile)
+    const arrBuf = await selectedFile.arrayBuffer()
+    const audioData = WavDecoder.decode.sync(arrBuf)
+
+    if (1 !== audioData.channelData.length) {
+      throw new Error('Unsupported format: mono audio sources only are supported.')
+    }
+    const chunk = new ZsndWavChunk(audioData.channelData[0])
+    await new DetectZsndService().detect({
+      reportDropout: console.log,
+      reportProgress: console.log,
+    }, chunk, audioData.sampleRate)
+
+    const reArrBuf = WavEncdoer.encode.sync(audioData, { float: true, bitDepth: 32 })
+    const blob = new Blob([reArrBuf])
+    await _waveformControls.value?.loadBlob(blob)
 
     // Blur the focus to prevent the file from reloading
     // when the user presses Enter repeatedly.

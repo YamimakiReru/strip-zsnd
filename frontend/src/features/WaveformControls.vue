@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { useAppStore } from "@/stores/ZsndAppStore.ts"
+import { useAppStore } from "@/stores/ZsndAppStore"
+import { formatAudioPosition } from "@/util"
 
 import {
   useWaveSurfer,
@@ -29,7 +30,7 @@ useWaveSurferTimeline({
 useWaveSurferMinimap({ waveSurfer: _unsafeWaveSurfer, minimapOptions: { height: 64 } })
 useWaveSurferHover({
   waveSurfer: _unsafeWaveSurfer,
-  hoverOptions: { labelSize: '1.5rem', formatTimeCallback: _formatAudioPosition }
+  hoverOptions: { labelSize: '1.5rem', formatTimeCallback: formatAudioPosition }
 })
 
 async function loadBlob(blob: Blob) {
@@ -116,19 +117,6 @@ function _playPauseOnKeyUp(event: KeyboardEvent) {
   _ws.waveSurfer.value?.playPause()
 }
 
-/**
- * @returns {string} e.g. "01:23.456"
- */
-function _formatAudioPosition(seconds: number): string {
-  const minutes = Math.floor(seconds / 60)
-  const secs = Math.floor(seconds % 60)
-  const millis = Math.floor((seconds % 1) * 1000)
-  return (
-    String(minutes).padStart(2, "0") +
-    ":" + String(secs).padStart(2, "0") +
-    "." + String(millis).padStart(3, "0")
-  )
-}
 </script>
 
 <template>
@@ -142,7 +130,7 @@ function _formatAudioPosition(seconds: number): string {
           <button type="button" @click="_ws.waveSurfer.value?.skip(-1)" class="btn join-item">-1s</button>
           <button type="button" @click="_ws.waveSurfer.value?.skip(+1)" class="btn join-item">+1s</button>
         </div>
-        {{ _formatAudioPosition(_ws.currentTime.value) }} / {{ _formatAudioPosition(_ws.totalDuration.value) }}
+        {{ formatAudioPosition(_ws.currentTime.value) }} / {{ formatAudioPosition(_ws.totalDuration.value) }}
       </div>
       <label class="input text-base-content">
         <span class="label">Zoom</span>

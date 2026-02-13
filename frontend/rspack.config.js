@@ -44,6 +44,7 @@ export default {
     alias: {
       "@": path.resolve(__dirname, "src"),
     },
+    extensions: ['.ts', '.js', '.vue'],
   },
   module: {
     rules: [
@@ -86,5 +87,8 @@ export default {
         }
       },
     },
+  },
+  performance: {
+    maxEntrypointSize: 512000,
   },
 };
