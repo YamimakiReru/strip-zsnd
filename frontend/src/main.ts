@@ -1,4 +1,7 @@
 import { createApp } from "vue"
-import ZsndApp from "./ZsndApp.vue"
+import { createPinia } from "pinia"
+import ZsndApp from "@/views/ZsndApp.vue"
 
-createApp(ZsndApp).mount("#zs-app")
+const app = createApp(ZsndApp)
+app.use(createPinia())
+app.mount("#zs-app")

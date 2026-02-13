@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @plugin "daisyui" {
-    themes: synthwave, all;
+    themes: all;
 }
 
 @theme {
@@ -44,4 +44,33 @@
 
 .alert-error {
     animation: shake 0.3s ease-in-out;
+}
+
+/*Tailwind cannot detect classes inside comma‑separated selectors. */
+/*
+ * WaveSurfer v7.12.1 DOM:
+ *
+ * #zs-waveform-controls > div > #shadow-root
+ *   > [scroll] > [wrapper]
+ *     > [canvases] > div > canvas
+ *     > [progress] > ...
+ */
+#zs-waveform-controls>div {
+    height: 100%;
+}
+
+#zs-waveform-controls ::part(scroll) {
+    height: calc(100% - 70px);
+}
+
+#zs-waveform-controls ::part(wrapper) {
+    height: 100%;
+}
+
+#zs-waveform-controls ::part(canvases) {
+    height: calc(100% - 40px);
+}
+
+#zs-waveform-controls ::part(progress) {
+    height: calc(100% - 40px);
 }

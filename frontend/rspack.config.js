@@ -39,7 +39,12 @@ class VendorOnlyMinifyPlugin {
 }
 
 export default {
-  entry: "./src/main.ts",
+  entry: path.resolve(__dirname, "src/main.ts"),
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+    },
+  },
   module: {
     rules: [
       {
