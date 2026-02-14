@@ -6,7 +6,7 @@ import WaveformControls from "@/features/WaveformControls.vue"
 import ThemeChooser from "@/components/ThemeChooser.vue"
 
 import WavDecoder from "wav-decoder"
-import WavEncdoer from "wav-encoder"
+import WavEncoder from "wav-encoder"
 import { XCircleIcon } from "@heroicons/vue/24/solid"
 import { ref } from "vue"
 
@@ -30,12 +30,13 @@ async function _onFileChange(event: Event) {
       throw new Error('Unsupported format: mono audio sources only are supported.')
     }
     const chunk = new ZsndWavChunk(audioData.channelData[0])
-    await new DetectZsndService().detect({
-      reportDropout: console.log,
-      reportProgress: console.log,
+    const dropouts = await new DetectZsndService().detect({
+      reportProgress: (position, total) => {
+        store.setProgress(100 * position / total)
+      }
     }, chunk, audioData.sampleRate)
 
-    const reArrBuf = WavEncdoer.encode.sync(audioData, { float: true, bitDepth: 32 })
+    const reArrBuf = WavEncoder.encode.sync(audioData, { float: true, bitDepth: 32 })
     const blob = new Blob([reArrBuf])
     await _waveformControls.value?.loadBlob(blob)
 
@@ -50,15 +51,20 @@ async function _onFileChange(event: Event) {
     _fileLoadingError.value = `Could not load file: ${msg}`
   } finally {
     store.decrementBusyCounter()
+    store.clearProgress()
   }
 }
 </script>
 
 <template>
-  <div ref="el" class="fixed inset-0 md:p-4">
+  <div ref="el" class="fixed inset-0 portrait:md:p-4 lg:p-4">
     <!-- loading spinner -->
     <div v-if="store.isBusy" class="z-50 fixed inset-0 bg-neutral/50 flex items-center justify-center">
-      <div class="loading loading-spinner loading-xl -scale-500 text-primary"></div>
+      <div v-if="null != store.progess" class="radial-progress text-primary text-5xl" role="progressbar"
+        :style="{ '--value': store.progess, '--size': '80vmin', '--thickness': '2rem' }"
+        :aria-valuenow="store.progess">
+        {{ store.progess }}%</div>
+      <div v-else class="loading loading-spinner loading-xl -scale-800 text-primary"></div>
     </div>
     <!-- body -->
     <div class="w-full h-full flex flex-col gap-2 max-w-5xl mx-auto p-2 bg-neutral text-neutral-content rounded-lg">

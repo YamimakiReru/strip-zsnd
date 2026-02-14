@@ -8,13 +8,8 @@ describe(DetectZsndService.name, () => {
     buf.fill(1e-10, 89383, 89383 + 581)
     const chunk = new ZsndWavChunk(buf)
     const service = new DetectZsndService();
-    const results: number[][] = [];
-    await service.detect({
-      reportDropout: (position, length) => {
-        results.push([position, length])
-      }
-    }, chunk, 44100)
-    expect(results).toEqual([[89383, 581]])
+    const results = await service.detect({}, chunk, 44100)
+    expect(results).toEqual([{ position: 89383, duration: 581 }])
   })
 })
 

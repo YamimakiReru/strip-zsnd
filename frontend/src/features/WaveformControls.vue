@@ -30,7 +30,7 @@ useWaveSurferTimeline({
 useWaveSurferMinimap({ waveSurfer: _unsafeWaveSurfer, minimapOptions: { height: 64 } })
 useWaveSurferHover({
   waveSurfer: _unsafeWaveSurfer,
-  hoverOptions: { labelSize: '1.5rem', formatTimeCallback: formatAudioPosition }
+  hoverOptions: { labelSize: "1.5rem", formatTimeCallback: formatAudioPosition }
 })
 
 async function loadBlob(blob: Blob) {
