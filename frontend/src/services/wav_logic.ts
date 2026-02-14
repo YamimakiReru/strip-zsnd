@@ -10,8 +10,8 @@ export class ZsndWavChunk<T extends ArrayLike<number>> {
   private readonly _frames: T;
 
   constructor(frames: T) {
-    this._frames = frames
-    this.size = frames.length
+    this._frames = frames;
+    this.size = frames.length;
   }
 
   public countLeadingZeros(predicate: ZeroSoundPredicate<T>): number {
@@ -20,7 +20,7 @@ export class ZsndWavChunk<T extends ArrayLike<number>> {
         return i;
       }
     }
-    return this._frames.length
+    return this._frames.length;
   }
 
   public countTrailingZeros(predicate: ZeroSoundPredicate<T>): number {
@@ -29,26 +29,28 @@ export class ZsndWavChunk<T extends ArrayLike<number>> {
         return this._frames.length - i - 1;
       }
     }
-    return this._frames.length
+    return this._frames.length;
   }
 
-  public *iterateInnerZeroRuns(predicate: ZeroSoundPredicate<T>): IterableIterator<[number, number]> {
+  public *iterateInnerZeroRuns(
+    predicate: ZeroSoundPredicate<T>,
+  ): IterableIterator<[number, number]> {
     // skip leading and trailing zeros
-    let i = this.countLeadingZeros(predicate)
+    let i = this.countLeadingZeros(predicate);
 
     // scan inner dropouts
-    let zeroRunLength = 0
-    let zeroRunStart = 0
+    let zeroRunLength = 0;
+    let zeroRunStart = 0;
     for (; i < this._frames.length; ++i) {
       if (predicate.isZeroSoundSample(this._frames, i)) {
         if (0 === zeroRunLength) {
-          zeroRunStart = i
+          zeroRunStart = i;
         }
-        ++zeroRunLength
+        ++zeroRunLength;
       } else {
         if (0 < zeroRunLength) {
-          yield [zeroRunStart, zeroRunLength]
-          zeroRunLength = 0
+          yield [zeroRunStart, zeroRunLength];
+          zeroRunLength = 0;
         }
       }
     }
@@ -56,10 +58,10 @@ export class ZsndWavChunk<T extends ArrayLike<number>> {
 
   public subarray(start: number, stop: number) {
     if (!("subarray" in this._frames)) {
-      throw new Error("this._frames does not implement 'subarray()'")
+      throw new Error("this._frames does not implement 'subarray()'");
     }
     const sub = (this._frames.subarray as Function)(start, stop);
-    return new ZsndWavChunk(sub)
+    return new ZsndWavChunk(sub);
   }
 }
 
@@ -69,23 +71,23 @@ export class Float32ZeroSoundPredicate implements ZeroSoundPredicate<Float32Arra
   private readonly _minAmp: number;
 
   constructor(thresholdInDb: number) {
-    this._maxAmp = this._dbToAmplitude(thresholdInDb)
-    this._minAmp = -this._maxAmp
+    this._maxAmp = this._dbToAmplitude(thresholdInDb);
+    this._minAmp = -this._maxAmp;
   }
 
   /**
-    * dBFS conversion:
-    *   -6 dB = 0.5x amplitude
-    *  -20 dB = 0.1x amplitude
-    */
+   * dBFS conversion:
+   *   -6 dB = 0.5x amplitude
+   *  -20 dB = 0.1x amplitude
+   */
   private _dbToAmplitude(volumeInDb: number): number {
-    const amp = Math.pow(10, (volumeInDb / 20))
-    console.debug(`${volumeInDb} dBFS -> normalized amplitude ${amp}`)
-    return amp
+    const amp = Math.pow(10, volumeInDb / 20);
+    console.debug(`${volumeInDb} dBFS -> normalized amplitude ${amp}`);
+    return amp;
   }
 
   isZeroSoundSample(frames: Float32Array, posInBytes: number): boolean {
-    const fp = frames[posInBytes]
+    const fp = frames[posInBytes];
     return this._minAmp <= fp && fp <= this._maxAmp;
   }
 }
