@@ -23,6 +23,7 @@ function _initI18n(app: App) {
   }
 
   const i18n = createI18n({
+    legacy: false,
     locale,
     fallbackLocale: "en",
     messages: _MESSAGES,

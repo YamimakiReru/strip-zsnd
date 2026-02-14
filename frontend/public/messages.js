@@ -3,7 +3,6 @@
 window._MESSAGES = {
   en: {
     name: "English",
-    "app.theme": "Theme",
     "app.play": "Play",
     "app.pause": "Pause",
     "app.input_file_cannot_be_opened":
@@ -14,7 +13,6 @@ window._MESSAGES = {
   },
   es: {
     name: "Español",
-    "app.theme": "Tema",
     "app.play": "Jugar",
     "app.pause": "Pausa",
     "app.input_file_cannot_be_opened":
@@ -25,7 +23,6 @@ window._MESSAGES = {
   },
   ja: {
     name: "日本語",
-    "app.theme": "テーマ",
     "app.play": "再生",
     "app.pause": "停止",
     "app.input_file_cannot_be_opened":

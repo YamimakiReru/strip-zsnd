@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PaintBrushIcon, ChevronDownIcon } from "@heroicons/vue/24/solid";
+import { PaintBrushIcon } from "@heroicons/vue/24/solid";
 import { useI18n } from "vue-i18n";
 
 const _DEFAULT_THEME = "synthwave";
@@ -52,15 +52,13 @@ const { t } = useI18n();
 </script>
 
 <template>
-  <div class="dropdown">
-    <div tabindex="0" role="button" class="btn btn-sm md:btn-md min-w-28">
-      <PaintBrushIcon class="w-6 h-6 hidden sm:block" />
-      {{ t("app.theme") }}
-      <ChevronDownIcon class="w-6 h-6" />
+  <div class="dropdown dropdown-end">
+    <div tabindex="0" role="button" class="btn btn-sm md:btn-md">
+      <PaintBrushIcon class="w-6 h-6" />
     </div>
     <ul
       tabindex="-1"
-      class="dropdown-content overflow-y-scroll max-h-[80vh] bg-base-300 text-base-content rounded-box z-10 w-52 p-2 shadow-2xl"
+      class="dropdown-content overflow-y-scroll max-h-[80vh] bg-base-300 text-base-content rounded-box z-10 w-40 p-2 shadow-2xl"
     >
       <li v-for="theme of _DAISYUI_THEMES" :key="theme">
         <input

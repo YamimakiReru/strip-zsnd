@@ -14,7 +14,7 @@ en:
   app.args.min_duration: "Minimum duration considered a dropout. Unit: milliseconds."
   app.args.output_path: "Path to the output file. default: [input]-fixed"
   app.args.port: Port number.
-  app.args.threshold: "Volume threshold considered zero. Unit: dB. En PCM interno, se ignoran los valores muy pequeños."
+  app.args.threshold: "Volume threshold considered zero. Unit: dB. This option only works with PCM int16/int8/float."
   app.args.verbose: Increase logging verbosity (e.g., -v, -vv, -vvv).
 
   zsnd.failed_to_detect_file_type: "Failed to open file (maybe unsupported format): "
