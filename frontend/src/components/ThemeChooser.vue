@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { PaintBrushIcon, ChevronDownIcon } from "@heroicons/vue/24/solid"
+import { PaintBrushIcon, ChevronDownIcon } from "@heroicons/vue/24/solid";
+import { useI18n } from "vue-i18n";
 
-const _DEFAULT_THEME = "synthwave"
+const _DEFAULT_THEME = "synthwave";
 
 const _DAISYUI_THEMES = [
   "light",
@@ -45,21 +46,31 @@ const _DAISYUI_THEMES = [
   "caramelatte",
   "abyss",
   "silk",
-]
+];
+
+const { t } = useI18n();
 </script>
 
 <template>
   <div class="dropdown">
-    <div tabindex="0" role="button" class="btn btn-sm md:btn-md">
-      <PaintBrushIcon class="w-6 h-6" />
-      Theme
+    <div tabindex="0" role="button" class="btn btn-sm md:btn-md min-w-28">
+      <PaintBrushIcon class="w-6 h-6 hidden sm:block" />
+      {{ t("app.theme") }}
       <ChevronDownIcon class="w-6 h-6" />
     </div>
-    <ul tabindex="-1" class="dropdown-content overflow-y-scroll max-h-[80vh] bg-base-300 text-base-content rounded-box z-10 w-52 p-2 shadow-2xl">
+    <ul
+      tabindex="-1"
+      class="dropdown-content overflow-y-scroll max-h-[80vh] bg-base-300 text-base-content rounded-box z-10 w-52 p-2 shadow-2xl"
+    >
       <li v-for="theme of _DAISYUI_THEMES" :key="theme">
-        <input type="radio" name="theme-dropdown"
-          class="theme-controller w-full btn btn-sm btn-block btn-ghost justify-start" :aria-label="theme"
-          :value="theme" :checked="_DEFAULT_THEME === theme" />
+        <input
+          type="radio"
+          name="theme-dropdown"
+          class="theme-controller w-full btn btn-sm btn-block btn-ghost justify-start"
+          :aria-label="theme"
+          :value="theme"
+          :checked="_DEFAULT_THEME === theme"
+        />
       </li>
     </ul>
   </div>

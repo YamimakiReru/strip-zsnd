@@ -1,16 +1,23 @@
-import { defineStore } from "pinia"
+import { defineStore } from "pinia";
 
-export const useAppStore = defineStore('zsApp', {
+export const useAppStore = defineStore("zsApp", {
   state: () => ({
+    errors: [] as string[],
     busyCounter: 0,
-    progess: null as number | null,
+    progress: null as number | null,
   }),
   actions: {
+    pushError(msg: string) {
+      this.errors.push(msg);
+    },
+    removeErrorAt(index: number) {
+      this.errors.splice(index, 1);
+    },
     incrementBusyCounter() {
-      this.busyCounter++
+      this.busyCounter++;
     },
     decrementBusyCounter() {
-      this.busyCounter = Math.max(0, this.busyCounter - 1)
+      this.busyCounter = Math.max(0, this.busyCounter - 1);
     },
     /**
      * @param {number} newProgress
@@ -18,14 +25,13 @@ export const useAppStore = defineStore('zsApp', {
      *   and rounds it to the nearest integer.
      */
     setProgress(newProgress: number) {
-      this.progess = Math.round(Math.min(100, Math.max(0, newProgress)))
+      this.progress = Math.round(Math.min(100, Math.max(0, newProgress)));
     },
     clearProgress() {
-      this.progess = null
-    }
+      this.progress = null;
+    },
   },
   getters: {
     isBusy: (state) => state.busyCounter > 0,
-    progress: (state) => state.progess,
   },
-})
+});
