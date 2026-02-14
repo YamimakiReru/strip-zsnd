@@ -2,6 +2,7 @@
   "recommendations": [
     "bradlc.vscode-tailwindcss",
     "vue.volar",
+    "esbenp.prettier-vscode",
     "ms-python.black-formatter",
     "ms-python.vscode-pylance",
     "editorconfig.editorconfig",

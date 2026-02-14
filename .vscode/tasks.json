@@ -5,8 +5,8 @@
       "id": "args",
       "type": "promptString",
       "description": "Enter arguments",
-      "default": "--help",
-    },
+      "default": "--help"
+    }
   ],
   "tasks": [
     {
@@ -14,23 +14,16 @@
       "type": "shell",
       "command": ".venv/Scripts/python strip-zsnd.py --debug ${input:args}",
       "options": {
-        "cwd": "${workspaceFolder}",
-      },
+        "cwd": "${workspaceFolder}"
+      }
     },
     {
       "label": "web_dev",
-      "dependsOn": [
-        "web_dev_front",
-        "sleep",
-        "web_dev_py",
-      ],
+      "dependsOn": ["web_dev_front", "sleep", "web_dev_py"]
     },
     {
       "label": "web_dev_front",
-      "dependsOn": [
-        "web_dev_css",
-        "web_dev_js",
-      ],
+      "dependsOn": ["web_dev_css", "web_dev_js"]
     },
     {
       "hide": true,
@@ -38,8 +31,8 @@
       "type": "shell",
       "command": ".venv/Scripts/python strip-zsnd.py --debug webui",
       "options": {
-        "cwd": "${workspaceFolder}",
-      },
+        "cwd": "${workspaceFolder}"
+      }
     },
     {
       "hide": true,
@@ -47,9 +40,9 @@
       "type": "shell",
       "command": "npm run dev",
       "options": {
-        "cwd": "${workspaceFolder}/frontend",
+        "cwd": "${workspaceFolder}/frontend"
       },
-      "isBackground": true,
+      "isBackground": true
     },
     {
       "hide": true,
@@ -57,15 +50,15 @@
       "type": "shell",
       "command": "npm run dev:css",
       "options": {
-        "cwd": "${workspaceFolder}/frontend",
+        "cwd": "${workspaceFolder}/frontend"
       },
-      "isBackground": true,
+      "isBackground": true
     },
     {
       "hide": true,
       "label": "sleep",
       "type": "shell",
-      "command": "sleep 3",
+      "command": "sleep 3"
     }
-  ],
+  ]
 }

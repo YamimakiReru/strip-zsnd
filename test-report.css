@@ -1,61 +1,66 @@
 :root {
-    --text: #e4d9ff;
+  --text: #e4d9ff;
 }
 
 body {
-    font-size: 16px;
-    background-color: #1a1525;
-    color: var(--text);
+  font-size: 16px;
+  background-color: #1a1525;
+  color: var(--text);
 }
 
-p { color: var(--text) }
+p {
+  color: var(--text);
+}
 
 table {
-    background-color: #221b33;
-    border-color: #4a3f6b;
+  background-color: #221b33;
+  border-color: #4a3f6b;
 }
 
 th {
-    background-color: #2d2444;
-    color: #f0eaff;
-    border-color: #4a3f6b;
+  background-color: #2d2444;
+  color: #f0eaff;
+  border-color: #4a3f6b;
 }
 
 td {
-    background-color: #1f182d;
-    color: #e4d9ff;
-    border-color: #3a3155;
+  background-color: #1f182d;
+  color: #e4d9ff;
+  border-color: #3a3155;
 }
 
-h1, h2, h3 {
-    font-size: 20px;
-    color: #c7b3ff;
+h1,
+h2,
+h3 {
+  font-size: 20px;
+  color: #c7b3ff;
 }
 
 .pass {
-    color: #9be29b;
+  color: #9be29b;
 }
 
 .fail {
-    color: #ff7aa8;
+  color: #ff7aa8;
 }
 
 .error {
-    color: #ff9f7a;
+  color: #ff9f7a;
 }
 
 a {
-    color: #bfa3ff;
+  color: #bfa3ff;
 }
 
 a:hover {
-    color: #d8c7ff;
+  color: #d8c7ff;
 }
 
-#environment td, #environment th {
-    background-color: #241c36;
+#environment td,
+#environment th {
+  background-color: #241c36;
 }
 
 #results-table td {
-    font-size: 14px;
+  font-size: 14px;
 }

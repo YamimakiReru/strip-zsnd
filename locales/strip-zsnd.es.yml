@@ -1,5 +1,6 @@
+# yaml-language-server: $schema=none
 es:
-  'app.description': |
+  app.description: |
     Una herramienta para eliminar las muestras cero que faltan en un archivo WAV
 
     Elimina los ceros consecutivos causados por el desbordamiento del búfer durante la grabación.
@@ -11,19 +12,19 @@ es:
   app.args.detect_only: Detecta secuencias de ceros sin crear ningún archivo de salida
   app.args.force: Sobrescribe el archivo de salida sin solicitar confirmación, incluso si ya existe.
   app.args.input_path: Ruta al archivo de entrada
-  app.args.min_duration: 'Duración mínima considerada como abandono. Unidad: milisegundos.'
-  app.args.output_path: 'Ruta al archivo de salida. predeterminado: [input]-fixed'
+  app.args.min_duration: "Duración mínima considerada como abandono. Unidad: milisegundos."
+  app.args.output_path: "Ruta al archivo de salida. predeterminado: [input]-fixed"
   app.args.port: Número de puerto.
-  app.args.threshold: 'Umbral de volumen considerado cero. Unidad: dB. Esta opción solo funciona con PCM int16/int8/float.'
+  app.args.threshold: "Umbral de volumen considerado cero. Unidad: dB. Esta opción solo funciona con PCM int16/int8/float."
   app.args.verbose: Aumentar la verbosidad del registro (por ejemplo, -v, -vv, -vvv).
 
   zsnd.failed_to_detect_file_type: "No se pudo abrir el archivo (quizás sea un formato no compatible): "
   zsnd.mono_only_supported: Solo admite fuentes de audio mono
-  zsnd.zero_sound_detected: '%%(abs_start)s-%%(abs_end)s (%%(length)d muestras) carecían de'
+  zsnd.zero_sound_detected: "%%(abs_start)s-%%(abs_end)s (%%(length)d muestras) carecían de"
 
   # Common
   app.processing: Procesamiento...
-  app.confirm_overwrite_output_file: '%%s ya existe. ¿Desea sobrescribirlo?'
+  app.confirm_overwrite_output_file: "%%s ya existe. ¿Desea sobrescribirlo?"
   app.input_file_cannot_be_opened: 'No se puede abrir el archivo de entrada "%%(f)s": %%(exc)s'
   app.output_file_cannot_be_opened: 'No se puede abrir el archivo de salida "%%(f)s": %%(exc)s'
 
@@ -32,30 +33,30 @@ es:
   # Original licenses:
   # - Typer: MIT License        Copyright (c) 2019 Sebastián Ramírez
   # - Click: BSD-style license  Copyright 2014 Pallets
-  click.options_metavar: '[Opciones]'
-  click.subcommand_metavar: '[ARGS]...'
+  click.options_metavar: "[Opciones]"
+  click.subcommand_metavar: "[ARGS]..."
   typer.completion.install_callback: Instalar autocompletado para el shell actual.
   typer.completion.show_callback: Muestra el autocompletado para el shell actual, para copiarlo o personalizar la instalación.
 
-  'gettext.Invalid value for {param_hint}: {message}': 'Valor no válido para {param_hint}: {message}'
+  "gettext.Invalid value for {param_hint}: {message}": "Valor no válido para {param_hint}: {message}"
   gettext.Missing argument: Argumento faltante
-  gettext.{name} {filename!r} does not exist.: '{name} {filename!r} no existe..'
-  gettext.{name} {filename!r} is a directory.: '{name} {filename!r} es un directorio.'
-  gettext.{name} {filename!r} is a file.: '{name} {filename!r} es un archivo.'
-  gettext.{name} {filename!r} is not executable.: '{name} {filename!r} no es ejecutable.'
-  gettext.{name} {filename!r} is not readable.: '{name} {filename!r} no es legible.'
-  gettext.{name} {filename!r} is not writble.: '{name} {filename!r} no es grabable.'
-  'gettext.No such option: {name}': 'No existe tal opción: {name}'
+  gettext.{name} {filename!r} does not exist.: "{name} {filename!r} no existe.."
+  gettext.{name} {filename!r} is a directory.: "{name} {filename!r} es un directorio."
+  gettext.{name} {filename!r} is a file.: "{name} {filename!r} es un archivo."
+  gettext.{name} {filename!r} is not executable.: "{name} {filename!r} no es ejecutable."
+  gettext.{name} {filename!r} is not readable.: "{name} {filename!r} no es legible."
+  gettext.{name} {filename!r} is not writble.: "{name} {filename!r} no es grabable."
+  "gettext.No such option: {name}": "No existe tal opción: {name}"
   gettext.Show this message and exit.: Mostrar este mensaje y salir.
   "gettext.Try [blue]'{command_path} {help_option}'[/] for help.": "Prueba [blue]'{command_path} {help_option}'[/] para obtener ayuda."
-  gettext.{value} is not in the range {range}.: '{value} no está en el rango {range}.'
-  'gettext.{value!r} is not a valid boolean. Recognized values: {states}': '{value!r} no es un valor booleano válido. Valores reconocidos: {states}'
-  gettext.{value!r} is not a valid {number_type}.: '{value!r} no es un valor válido para {number_type}.'
+  gettext.{value} is not in the range {range}.: "{value} no está en el rango {range}."
+  "gettext.{value!r} is not a valid boolean. Recognized values: {states}": "{value!r} no es un valor booleano válido. Valores reconocidos: {states}"
+  gettext.{value!r} is not a valid {number_type}.: "{value!r} no es un valor válido para {number_type}."
 
-  'gettext.[default: {}]': '[predeterminado: {}]'
-  'gettext.(deprecated) ': '(obsoleto) '
-  'gettext.[env var: {}]': '[variable de entorno: {}]'
-  gettext.[required]: '[requerido]'
+  "gettext.[default: {}]": "[predeterminado: {}]"
+  "gettext.(deprecated) ": "(obsoleto) "
+  "gettext.[env var: {}]": "[variable de entorno: {}]"
+  gettext.[required]: "[requerido]"
 
   gettext.Aborted.: Abortado.
   gettext.Arguments: Argumentos
@@ -65,8 +66,8 @@ es:
   gettext.file: archivo
   gettext.path: ruta
   gettext.Options: Opciones
-  'gettext.Usage:': 'Uso:'
+  "gettext.Usage:": "Uso:"
 
   ngettext.{value!r} is not {choice}.:
-    one: '{value!r} no es {choice}.'
-    many: '{value!r} no es un valor de.'
+    one: "{value!r} no es {choice}."
+    many: "{value!r} no es un valor de."
