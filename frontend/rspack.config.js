@@ -4,6 +4,8 @@ import { VueLoaderPlugin } from "vue-loader";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import path from "path";
+import { defineConfig } from "@rspack/cli";
+import { rspack } from "@rspack/core";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -11,7 +13,9 @@ const distPath = path.resolve(__dirname, "./dist");
 
 // cleanup
 if (fs.existsSync(distPath)) {
-  fs.rmSync(distPath, { recursive: true, force: true });
+  for (const child of fs.readdirSync(distPath)) {
+    fs.rmSync(path.join(distPath, child), { recursive: true, force: true });
+  }
 }
 
 class VendorOnlyMinifyPlugin {
@@ -46,7 +50,8 @@ class VendorOnlyMinifyPlugin {
   }
 }
 
-export default {
+export default defineConfig({
+  context: __dirname,
   entry: path.resolve(__dirname, "src/main.ts"),
   resolve: {
     alias: {
@@ -75,12 +80,17 @@ export default {
     ],
   },
   plugins: [
-    new VueLoaderPlugin(),
     new DefinePlugin({
       __VUE_OPTIONS_API__: JSON.stringify(true),
-      __VUE_PROD_DEVTOOLS__: JSON.stringify(false),
+      __VUE_PROD_DEVTOOLS__: JSON.stringify(true),
       __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: JSON.stringify(false),
     }),
+    new rspack.HtmlRspackPlugin({
+      template: path.resolve(__dirname, "index.html"),
+      minify: false,
+      inject: "body",
+    }),
+    new VueLoaderPlugin(),
     new VendorOnlyMinifyPlugin(),
   ],
   optimization: {
@@ -98,5 +108,6 @@ export default {
   },
   performance: {
     maxEntrypointSize: 512000,
+    maxAssetSize: 512000,
   },
-};
+});

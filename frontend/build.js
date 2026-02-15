@@ -18,10 +18,6 @@ npx(
   path.resolve(__dirname, "dist/style.css"),
 );
 fs.copyFileSync(
-  path.resolve(__dirname, "public/index.html"),
-  path.resolve(__dirname, "dist/index.html"),
-);
-fs.copyFileSync(
   path.resolve(__dirname, "public/messages.js"),
   path.resolve(__dirname, "dist/messages.js"),
 );
