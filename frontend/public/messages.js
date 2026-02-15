@@ -7,6 +7,8 @@ window.R_MESSAGES = {
     "app.pause": "Pause",
     "app.input_file_cannot_be_opened":
       "Input file '{filename}' cannot be opened: {exc}",
+    "zsnd.min_duration": "MinDuration",
+    "zsnd.threshold": "Threshold",
     "zsnd.mono_only_supported": "Supports mono audio sources only",
     "zsnd.tips.keyboard_shortcut_play_pause":
       "Press Space or Enter to play/pause the audio.",
@@ -15,6 +17,8 @@ window.R_MESSAGES = {
     "app.locale_name": "Español",
     "app.play": "Jugar",
     "app.pause": "Pausa",
+    "zsnd.min_duration": "Duración mínima",
+    "zsnd.threshold": "Umbral de volumen",
     "app.input_file_cannot_be_opened":
       "No se puede abrir el archivo de entrada '{filename}': {exc}",
     "zsnd.mono_only_supported": "Solo admite fuentes de audio mono",
@@ -25,6 +29,8 @@ window.R_MESSAGES = {
     "app.locale_name": "日本語",
     "app.play": "再生",
     "app.pause": "停止",
+    "zsnd.min_duration": "音飛びとみなす長さ",
+    "zsnd.threshold": "無音とみなす音量",
     "app.input_file_cannot_be_opened":
       "入力ファイル '{filename}' を開けません: {exc}",
     "zsnd.mono_only_supported": "モノラル音源のみのサポートです",

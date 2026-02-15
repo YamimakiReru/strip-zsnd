@@ -1,12 +1,26 @@
 <script setup lang="ts">
 import { useAudioStore } from "@/stores/AudioStore";
 import WaveformControls from "@/features/WaveformControls.vue";
+import InputBoxWithPreset from "@/components/InputBoxWithPreset.vue";
 import ThemeChooser from "@/components/ThemeChooser.vue";
 import LanguageChooser from "@/components/LanguageChooser.vue";
 import ErrorBox from "@/components/ErrorBox.vue";
 import LoadingIndicator from "@/components/LoadingIndicator.vue";
 
+import { ClockIcon, SpeakerXMarkIcon } from "@heroicons/vue/16/solid";
+import { useI18n } from "vue-i18n";
+import { computed } from "vue";
+
+const { t } = useI18n();
 const audioStore = useAudioStore();
+const minDuration = computed({
+  get: () => audioStore.minDurationInMs,
+  set: (v: number) => audioStore.setMinDuration(v),
+});
+const threshold = computed({
+  get: () => audioStore.threshold,
+  set: (v: number) => audioStore.setThreshold(v),
+});
 
 async function _onFileChange(event: Event) {
   const inputElement = event.target as HTMLInputElement;
@@ -31,7 +45,7 @@ async function _onFileChange(event: Event) {
       class="w-full h-full flex flex-col gap-2 p-2 bg-neutral text-neutral-content rounded-lg"
     >
       <div class="flex gap-2">
-        <div class="flex flex-col landscape:flex-row md:flex-row gap-1">
+        <div class="grow flex flex-col landscape:flex-row md:flex-row gap-1">
           <input
             type="file"
             @change="_onFileChange"
@@ -39,67 +53,28 @@ async function _onFileChange(event: Event) {
             class="file-input file-input-sm md:file-input-md text-base-content/50"
           />
           <div class="flex gap-2">
-            <div class="dropdown">
-              <label class="input input-sm md:input-md text-base-content">
-                <span class="label gap-0"
-                  >MinDur<span class="hidden md:inline">ation</span></span
-                >
-                <input
-                  type="number"
-                  :value="audioStore.minDurationInMs"
-                  @change="
-                    (ev: any) => audioStore.setMinDuration(ev.target.value)
-                  "
-                  step="1"
-                  min="1"
-                  required
-                />
-                <span class="label"
-                  ><span class="hidden md:inline landscape:inline"
-                    >ms</span
-                  ></span
-                >
-              </label>
-              <ul
-                tabindex="0"
-                class="dropdown-content menu p-2 shadow bg-base-100 text-base-content rounded-box w-full mt-1"
-              >
-                <li v-for="n of [5, 10, 30, 50, 100]" :key="`dur${n}`">
-                  <a @click="audioStore.setMinDuration(n)">{{ n }} ms</a>
-                </li>
-              </ul>
-            </div>
-            <div class="dropdown dropdown-end">
-              <label class="input input-sm md:input-md text-base-content">
-                <span class="label gap-0"
-                  >T<span class="hidden md:inline landscape:inline"
-                    >hreshold</span
-                  ></span
-                >
-                <input
-                  type="number"
-                  :value="audioStore.threshold"
-                  @change="
-                    (ev: any) => audioStore.setThreshold(ev.target.value)
-                  "
-                  max="0"
-                  required
-                />
-                <span class="label"
-                  ><span class="hidden md:inline landscape:inline"
-                    >dB</span
-                  ></span
-                >
-              </label>
-              <ul
-                tabindex="0"
-                class="dropdown-content menu p-2 shadow bg-base-100 text-base-content rounded-box w-full mt-1"
-              >
-                <li v-for="n of [-80, -75, -70, -65, -60]" :key="`th${n}`">
-                  <a @click="audioStore.setThreshold(n)">{{ n }} dB</a>
-                </li>
-              </ul>
-            </div>
+            <InputBoxWithPreset
+              :label="t('zsnd.min_duration')"
+              unit="ms"
+              v-model="minDuration"
+              :presets="[5, 10, 30, 50, 100]"
+              :input-attrs="{ step: 1, min: 1, required: true }"
+            >
+              <template #icon>
+                <ClockIcon class="h-4 w-4" />
+              </template>
+            </InputBoxWithPreset>
+            <InputBoxWithPreset
+              :label="t('zsnd.threshold')"
+              unit="dB"
+              v-model="threshold"
+              :presets="[-80, -75, -70, -65, -60]"
+              :input-attrs="{ max: 0, required: true }"
+            >
+              <template #icon>
+                <SpeakerXMarkIcon class="h-4 w-4" />
+              </template>
+            </InputBoxWithPreset>
           </div>
         </div>
         <div class="flex flex-col landscape:flex-row md:flex-row gap-1">
