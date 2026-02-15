@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useAudioStore } from "@/stores/AudioStore";
 import { useAppStore } from "@/stores/ZsndAppStore";
 import { formatAudioPosition } from "@/util";
 
@@ -11,13 +12,14 @@ import {
 import WaveSurferZoomPlugin from "wavesurfer.js/dist/plugins/zoom.esm.js";
 import { InformationCircleIcon } from "@heroicons/vue/24/solid";
 import { useI18n } from "vue-i18n";
-import { nextTick, onMounted, onUnmounted, Ref, ref } from "vue";
+import { onMounted, onUnmounted, watch, nextTick, Ref, ref } from "vue";
 
 const _SLIDER_MAX = 1000;
 const _MAX_ZOOM = 10000;
 
 const { t } = useI18n();
 const store = useAppStore();
+const audioStore = useAudioStore();
 const _zoomLevel = ref<number>(0);
 const _waveSurferDivRef = ref<HTMLElement | null>(null);
 const _ws = useWaveSurfer({
@@ -48,37 +50,43 @@ useWaveSurferHover({
   },
 });
 
-async function loadBlob(blob: Blob) {
-  store.incrementBusyCounter();
-  try {
-    if (!_ws.waveSurfer.value) {
-      throw new Error("waveSurfer must not be null.");
-    }
-    await _ws.waveSurfer.value.loadBlob(blob);
-
-    // (wavesurfer.js v7.12.1)
-    // The Zoom plugin crashes if it receives mouse‑wheel events before an audio is loaded.
-    // Initialize the plugin only after WaveSurfer has finished loading an audio.
-    const activePlugins = _ws.waveSurfer.value.getActivePlugins();
-    const isZoomPluginLoaded =
-      -1 != activePlugins.findIndex((p) => "calculateNewZoom" in p);
-    if (!isZoomPluginLoaded) {
-      _ws.waveSurfer.value?.registerPlugin(
-        new WaveSurferZoomPlugin({
-          exponentialZooming: true,
-          maxZoom: _MAX_ZOOM,
-        }),
-      );
+watch(
+  () => audioStore.audioBlobForPreview,
+  async (blob: Blob | null) => {
+    if (null == blob) {
+      store.errors.push("Unload operation is not yet implemented.");
+      return;
     }
 
-    _ws.waveSurfer.value.seekTo(0);
-    _updateZoomLevel();
-  } finally {
-    store.decrementBusyCounter();
-  }
-}
+    store.incrementBusyCounter();
+    try {
+      if (!_ws.waveSurfer.value) {
+        throw new Error("waveSurfer must not be null.");
+      }
+      await _ws.waveSurfer.value.loadBlob(blob);
 
-defineExpose({ loadBlob });
+      // (wavesurfer.js v7.12.1)
+      // The Zoom plugin crashes if it receives mouse‑wheel events before an audio is loaded.
+      // Initialize the plugin only after WaveSurfer has finished loading an audio.
+      const activePlugins = _ws.waveSurfer.value.getActivePlugins();
+      const isZoomPluginLoaded =
+        -1 != activePlugins.findIndex((p) => "calculateNewZoom" in p);
+      if (!isZoomPluginLoaded) {
+        _ws.waveSurfer.value?.registerPlugin(
+          new WaveSurferZoomPlugin({
+            exponentialZooming: true,
+            maxZoom: _MAX_ZOOM,
+          }),
+        );
+      }
+
+      _ws.waveSurfer.value.seekTo(0);
+      _updateZoomLevel();
+    } finally {
+      store.decrementBusyCounter();
+    }
+  },
+);
 
 onMounted(async () => {
   await nextTick();

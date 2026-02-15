@@ -1,26 +1,12 @@
 <script setup lang="ts">
-import DetectZsndService from "@/services/DetectZsndService";
-import { ZsndWavChunk } from "@/services/wav_logic";
 import { useAudioStore } from "@/stores/AudioStore";
-import { useAppStore } from "@/stores/ZsndAppStore";
-
 import WaveformControls from "@/features/WaveformControls.vue";
 import ThemeChooser from "@/components/ThemeChooser.vue";
 import LanguageChooser from "@/components/LanguageChooser.vue";
 import ErrorBox from "@/components/ErrorBox.vue";
-import LoadingIndicator  from "@/components/LoadingIndicator.vue";
+import LoadingIndicator from "@/components/LoadingIndicator.vue";
 
-import WavEncoder from "wav-encoder";
-import WavDecoder from "wav-decoder";
-import { useI18n } from "vue-i18n";
-import { ref } from "vue";
-
-const { t } = useI18n();
-const store = useAppStore();
 const audioStore = useAudioStore();
-const _waveformControls = ref<InstanceType<typeof WaveformControls> | null>(
-  null,
-);
 
 async function _onFileChange(event: Event) {
   const inputElement = event.target as HTMLInputElement;
@@ -28,58 +14,13 @@ async function _onFileChange(event: Event) {
   if (!selectedFile) {
     return;
   }
+  await audioStore.loadFile(selectedFile);
 
-  store.incrementBusyCounter();
-  try {
-    const arrBuf = await selectedFile.arrayBuffer();
-    const audioData = WavDecoder.decode.sync(arrBuf);
-    if (1 !== audioData.channelData.length) {
-      store.pushError(t("zsnd.mono_only_supported"));
-      return;
-    }
-
-    await _callDetectService(audioData);
-
-    // Blur the focus to prevent the file from reloading
-    // when the user presses Enter repeatedly.
-    if (event.target instanceof HTMLElement) {
-      event.target.blur();
-    }
-  } catch (exc) {
-    console.error(exc);
-    const msg = exc instanceof Error ? exc.message : String(exc);
-    store.pushError(
-      t("app.input_file_cannot_be_opened", {
-        filename: selectedFile.name,
-        exc: msg,
-      }),
-    );
-  } finally {
-    store.decrementBusyCounter();
-    store.clearProgress();
+  // Blur the focus to prevent the file from reloading
+  // when the user presses Enter repeatedly.
+  if (event.target instanceof HTMLElement) {
+    event.target.blur();
   }
-}
-
-async function _callDetectService(audioData: WavDecoder.AudioData) {
-  const chunk = new ZsndWavChunk(audioData.channelData[0]);
-  const dropouts = await new DetectZsndService().detect(
-    {
-      reportProgress: (position, total) => {
-        store.setProgress((100 * position) / total);
-      },
-    },
-    chunk,
-    audioData.sampleRate,
-    audioStore.minDurationInMs,
-    audioStore.threshold,
-  );
-
-  const reArrBuf = WavEncoder.encode.sync(audioData, {
-    float: true,
-    bitDepth: 32,
-  });
-  const blob = new Blob([reArrBuf]);
-  await _waveformControls.value?.loadBlob(blob);
 }
 </script>
 
