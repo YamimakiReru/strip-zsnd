@@ -7,24 +7,39 @@ export const useAppStore = defineStore("zsApp", () => {
   const progress = ref(null as number | null);
 
   return {
+    /** Error messages. */
     errors,
+
+    /**
+     * Number of active jobs.
+     * When the value is greater than 0, a full‑screen spinner is shown and user input is blocked.
+     */
     busyCounter,
+
+    /**
+     * Progress percentage displayed to the user when the system is busy.
+     * Valid range: 0 to 100.
+     */
     progress,
 
     isBusy: computed(() => busyCounter.value > 0),
 
+    /** Displays a human‑readable error message to the user. */
     pushError(msg: string) {
       errors.value.push(msg);
     },
 
+    /** Removes a human‑readable error message at the given index. */
     removeErrorAt(index: number) {
       errors.value.splice(index, 1);
     },
 
+    /** Increments the busy counter, causing the UI to enter a busy state. */
     incrementBusyCounter() {
       ++busyCounter.value;
     },
 
+    /** Decrements the busy counter. When the counter reaches 0, the UI becomes interactive again. */
     decrementBusyCounter() {
       busyCounter.value = Math.max(0, busyCounter.value - 1);
     },

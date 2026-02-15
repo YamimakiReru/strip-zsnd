@@ -3,6 +3,7 @@ import { LanguageIcon } from "@heroicons/vue/24/solid";
 import { useI18n } from "vue-i18n";
 
 const props = defineProps<{
+  /** CSS class applied to the dropdown button.*/
   buttonClass?: string;
 }>();
 

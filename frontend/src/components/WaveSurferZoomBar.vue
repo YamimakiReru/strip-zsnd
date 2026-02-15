@@ -9,7 +9,12 @@ import { useI18n } from "vue-i18n";
 import { onBeforeUnmount, onMounted, watch, computed, ref } from "vue";
 
 const props = defineProps<{
+  /**
+   * Container element used by wavesurfer.js to render its UI.
+   * Not the internal wrapper returned by getWrapper().
+   */
   container: HTMLElement | null;
+
   waveSurfer: WaveSurfer | null;
 }>();
 

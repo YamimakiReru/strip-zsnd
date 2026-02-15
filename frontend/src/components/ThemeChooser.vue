@@ -3,6 +3,8 @@ import { PaintBrushIcon } from "@heroicons/vue/24/solid";
 
 const props = defineProps<{
   defaultTheme?: string;
+
+  /** CSS class applied to the dropdown button.*/
   buttonClass?: string;
 }>();
 

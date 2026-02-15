@@ -1,10 +1,23 @@
 <script setup lang="ts" generic="T">
 const props = defineProps<{
+  /**
+   * Short description shown to the user explaining the expected value.
+   */
   label: string;
+
+  /** Unit used for the value. */
   unit: string;
+
+  /** Initial value used by v-model. */
   modelValue: T;
+
+  /** Preset values displayed as dropdown options. */
   presets: T[];
+
+  /** CSS class applied to the input container. */
   inputContainerClass?: string;
+
+  /** HTML attributes applied to the <input> element. */
   inputAttrs?: Record<string, any>;
 }>();
 
