@@ -5,6 +5,7 @@ window.R_MESSAGES = {
     "app.locale_name": "English",
     "app.play": "Play",
     "app.pause": "Pause",
+    "app.zoom": "zoom",
     "app.input_file_cannot_be_opened":
       "Input file '{filename}' cannot be opened: {exc}",
     "zsnd.min_duration": "MinDuration",
@@ -17,6 +18,7 @@ window.R_MESSAGES = {
     "app.locale_name": "Español",
     "app.play": "Jugar",
     "app.pause": "Pausa",
+    "app.zoom": "Zoom",
     "zsnd.min_duration": "Duración mínima",
     "zsnd.threshold": "Umbral de volumen",
     "app.input_file_cannot_be_opened":
@@ -29,6 +31,7 @@ window.R_MESSAGES = {
     "app.locale_name": "日本語",
     "app.play": "再生",
     "app.pause": "停止",
+    "app.zoom": "拡大",
     "zsnd.min_duration": "音飛びとみなす長さ",
     "zsnd.threshold": "無音とみなす音量",
     "app.input_file_cannot_be_opened":

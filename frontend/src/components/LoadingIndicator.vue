@@ -13,7 +13,7 @@ const progress = computed(() => store.progress);
 -->
   <div
     v-if="isBusy"
-    class="z-50 @container-[size] absolute inset-0 flex justify-center items-center bg-neutral/50"
+    class="z-50 @container-[size] absolute inset-0 flex justify-center items-center bg-base-100/70"
   >
     <div class="w-[80cqmin] h-[80cqmin]">
       <div

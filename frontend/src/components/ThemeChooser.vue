@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { PaintBrushIcon } from "@heroicons/vue/24/solid";
-const _DEFAULT_THEME = "synthwave";
+
+const props = defineProps<{
+  defaultTheme?: string;
+  buttonClass?: string;
+}>();
+
 const _DAISYUI_THEMES = [
   "light",
   "dark",
@@ -48,7 +53,7 @@ const _DAISYUI_THEMES = [
 
 <template>
   <div class="dropdown dropdown-end">
-    <div tabindex="0" role="button" class="btn btn-sm md:btn-md">
+    <div tabindex="0" role="button" class="btn" :class="buttonClass">
       <PaintBrushIcon class="w-6 h-6" />
     </div>
     <ul
@@ -62,7 +67,7 @@ const _DAISYUI_THEMES = [
           class="theme-controller w-full btn btn-sm btn-block btn-ghost justify-start"
           :aria-label="theme"
           :value="theme"
-          :checked="_DEFAULT_THEME === theme"
+          :checked="defaultTheme === theme"
         />
       </li>
     </ul>

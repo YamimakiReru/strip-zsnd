@@ -42,7 +42,7 @@ async function _onFileChange(event: Event) {
   <div class="relative w-full h-full portrait:md:p-4 lg:p-4">
     <LoadingIndicator />
     <div
-      class="w-full h-full flex flex-col gap-2 p-2 bg-neutral text-neutral-content rounded-lg"
+      class="w-full h-full flex flex-col gap-2 p-2 bg-base-300 rounded-lg"
     >
       <div class="flex gap-2">
         <div class="grow flex flex-col landscape:flex-row md:flex-row gap-1">
@@ -59,6 +59,7 @@ async function _onFileChange(event: Event) {
               v-model="minDuration"
               :presets="[5, 10, 30, 50, 100]"
               :input-attrs="{ step: 1, min: 1, required: true }"
+              input-container-class="input-sm md:input-md"
             >
               <template #icon>
                 <ClockIcon class="h-4 w-4" />
@@ -70,6 +71,7 @@ async function _onFileChange(event: Event) {
               v-model="threshold"
               :presets="[-80, -75, -70, -65, -60]"
               :input-attrs="{ max: 0, required: true }"
+              input-container-class="input-sm md:input-md"
             >
               <template #icon>
                 <SpeakerXMarkIcon class="h-4 w-4" />
@@ -78,8 +80,11 @@ async function _onFileChange(event: Event) {
           </div>
         </div>
         <div class="flex flex-col landscape:flex-row md:flex-row gap-1">
-          <ThemeChooser />
-          <LanguageChooser />
+          <ThemeChooser
+            button-class="btn-sm md:btn-md"
+            default-theme="synthwave"
+          />
+          <LanguageChooser button-class="btn-sm md:btn-md" />
         </div>
       </div>
       <ErrorBox />

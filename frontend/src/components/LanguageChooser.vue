@@ -2,12 +2,16 @@
 import { LanguageIcon } from "@heroicons/vue/24/solid";
 import { useI18n } from "vue-i18n";
 
+const props = defineProps<{
+  buttonClass?: string;
+}>();
+
 const { locale, availableLocales, t } = useI18n();
 </script>
 
 <template>
   <div class="dropdown dropdown-end">
-    <div tabindex="0" role="button" class="btn btn-sm md:btn-md">
+    <div tabindex="0" role="button" class="btn" :class="buttonClass">
       <LanguageIcon class="w-6 h-6" />
     </div>
     <ul

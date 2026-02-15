@@ -4,6 +4,7 @@ const props = defineProps<{
   unit: string;
   modelValue: T;
   presets: T[];
+  inputContainerClass?: string;
   inputAttrs?: Record<string, any>;
 }>();
 
@@ -18,9 +19,9 @@ function update(v: T) {
 
 <template>
   <div class="dropdown">
-    <label class="input input-sm md:input-md text-base-content">
+    <label class="input text-base-content" :class="inputContainerClass">
       <span class="label"
-        ><slot name="icon" /><span class="hidden md:flex">{{
+        ><slot name="icon" /><span class="hidden lg:flex">{{
           label
         }}</span></span
       >
@@ -33,13 +34,16 @@ function update(v: T) {
       />
       <span class="label">{{ unit }}</span></label
     >
-    <ul
+    <div
       tabindex="0"
       class="dropdown-content menu p-2 shadow bg-base-100 text-base-content rounded-box w-full mt-1"
     >
-      <li v-for="(p, i) of presets" :key="i">
-        <a @click="update(p)">{{ p }} {{ unit }}</a>
-      </li>
-    </ul>
+      <p class="text-sm opacity-70 mx-2 lg:hidden">{{ label }}</p>
+      <ul>
+        <li v-for="(p, i) of presets" :key="i">
+          <a @click="update(p)">{{ p }} {{ unit }}</a>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>

@@ -2,36 +2,32 @@
 import { useAudioStore } from "@/stores/AudioStore";
 import { useAppStore } from "@/stores/ZsndAppStore";
 import { formatAudioPosition } from "@/util";
+import WaveSurferZoomBar from "@/components/WaveSurferZoomBar.vue";
 
+import WaveSurfer from "wavesurfer.js";
 import {
   useWaveSurfer,
   useWaveSurferTimeline,
   useWaveSurferMinimap,
   useWaveSurferHover,
 } from "@meersagor/wavesurfer-vue";
-import WaveSurferZoomPlugin from "wavesurfer.js/dist/plugins/zoom.esm.js";
 import { InformationCircleIcon } from "@heroicons/vue/24/solid";
 import { useI18n } from "vue-i18n";
-import { onMounted, onUnmounted, watch, nextTick, Ref, ref } from "vue";
-
-const _SLIDER_MAX = 1000;
-const _MAX_ZOOM = 10000;
+import { onMounted, onBeforeUnmount, watch, nextTick, Ref, ref } from "vue";
 
 const { t } = useI18n();
 const store = useAppStore();
 const audioStore = useAudioStore();
-const _zoomLevel = ref<number>(0);
+
 const _waveSurferDivRef = ref<HTMLElement | null>(null);
 const _ws = useWaveSurfer({
   containerRef: _waveSurferDivRef,
   options: { normalize: true, autoCenter: true },
 });
 
-// (@meersagor/wavesurfer-vue v2.0.2)
-// Type could not be inferred here, so I fall back to an unsafe cast.
-const _unsafeWaveSurfer = _ws.waveSurfer as Ref<any>;
+const _rawWaveSurfer = _ws.waveSurfer as Ref<WaveSurfer | null>;
 useWaveSurferTimeline({
-  waveSurfer: _unsafeWaveSurfer,
+  waveSurfer: _rawWaveSurfer,
   timelineOptions: {
     height: 32,
     timeInterval: 0.1,
@@ -39,11 +35,11 @@ useWaveSurferTimeline({
   },
 });
 useWaveSurferMinimap({
-  waveSurfer: _unsafeWaveSurfer,
+  waveSurfer: _rawWaveSurfer,
   minimapOptions: { height: 64 },
 });
 useWaveSurferHover({
-  waveSurfer: _unsafeWaveSurfer,
+  waveSurfer: _rawWaveSurfer,
   hoverOptions: {
     labelSize: "1.5rem",
     formatTimeCallback: formatAudioPosition,
@@ -64,24 +60,7 @@ watch(
         throw new Error("waveSurfer must not be null.");
       }
       await _ws.waveSurfer.value.loadBlob(blob);
-
-      // (wavesurfer.js v7.12.1)
-      // The Zoom plugin crashes if it receives mouse‑wheel events before an audio is loaded.
-      // Initialize the plugin only after WaveSurfer has finished loading an audio.
-      const activePlugins = _ws.waveSurfer.value.getActivePlugins();
-      const isZoomPluginLoaded =
-        -1 != activePlugins.findIndex((p) => "calculateNewZoom" in p);
-      if (!isZoomPluginLoaded) {
-        _ws.waveSurfer.value?.registerPlugin(
-          new WaveSurferZoomPlugin({
-            exponentialZooming: true,
-            maxZoom: _MAX_ZOOM,
-          }),
-        );
-      }
-
       _ws.waveSurfer.value.seekTo(0);
-      _updateZoomLevel();
     } finally {
       store.decrementBusyCounter();
     }
@@ -106,29 +85,10 @@ onMounted(async () => {
   styleElement.textContent += `
 :where(.canvases, .progress) >div,
 :where(.canvases, .progress) canvas {height: 100% !important}`;
-
-  // (@meersagor/wavesurfer-vue v2.0.2)
-  // "zoom" is not forwarded as a Vue event, so "@zoom" will never fire.
-  _ws.waveSurfer.value?.on("zoom", (val) => {
-    // logarithmic slider
-    _zoomLevel.value = (_SLIDER_MAX * Math.log(val)) / Math.log(_MAX_ZOOM);
-  });
 });
-onUnmounted(() => {
+onBeforeUnmount(() => {
   window.removeEventListener("keyup", _playPauseOnKeyUp);
 });
-
-function _onZoomBarInput(event: InputEvent) {
-  const el = event.target as HTMLInputElement;
-  _zoomLevel.value = parseFloat(el.value);
-  _updateZoomLevel();
-}
-function _updateZoomLevel() {
-  // logarithmic slider
-  _ws.waveSurfer.value?.zoom(
-    Math.pow(_MAX_ZOOM, _zoomLevel.value / _SLIDER_MAX),
-  );
-}
 
 function _playPauseOnKeyUp(event: KeyboardEvent) {
   if (event.defaultPrevented) {
@@ -181,17 +141,7 @@ function _playPauseOnKeyUp(event: KeyboardEvent) {
         {{ formatAudioPosition(_ws.currentTime.value) }} /
         {{ formatAudioPosition(_ws.totalDuration.value) }}
       </div>
-      <label class="input text-base-content">
-        <span class="label">Zoom</span>
-        <input
-          type="range"
-          @input="_onZoomBarInput"
-          min="0"
-          :max="_SLIDER_MAX"
-          :value="_zoomLevel"
-          class="range"
-        />
-      </label>
+      <WaveSurferZoomBar :wave-surfer="_rawWaveSurfer" :container="_waveSurferDivRef" class="grow" />
     </div>
     <div
       v-if="_ws.isReady.value"
@@ -201,6 +151,6 @@ function _playPauseOnKeyUp(event: KeyboardEvent) {
       <InformationCircleIcon class="w-6 h-6" />
       {{ t("zsnd.tips.keyboard_shortcut_play_pause") }}
     </div>
-    <div ref="_waveSurferDivRef" id="zs-waveform-controls" class="grow"></div>
+    <div ref="_waveSurferDivRef" id="zs-waveform-controls" class="grow overflow-hidden"></div>
   </div>
 </template>
