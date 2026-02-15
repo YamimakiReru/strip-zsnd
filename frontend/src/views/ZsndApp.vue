@@ -3,10 +3,12 @@ import DetectZsndService from "@/services/DetectZsndService";
 import { ZsndWavChunk } from "@/services/wav_logic";
 import { useAudioStore } from "@/stores/AudioStore";
 import { useAppStore } from "@/stores/ZsndAppStore";
+
 import WaveformControls from "@/features/WaveformControls.vue";
 import ThemeChooser from "@/components/ThemeChooser.vue";
 import LanguageChooser from "@/components/LanguageChooser.vue";
 import ErrorBox from "@/components/ErrorBox.vue";
+import LoadingIndicator  from "@/components/LoadingIndicator.vue";
 
 import WavEncoder from "wav-encoder";
 import WavDecoder from "wav-decoder";
@@ -83,32 +85,7 @@ async function _callDetectService(audioData: WavDecoder.AudioData) {
 
 <template>
   <div class="relative w-full h-full portrait:md:p-4 lg:p-4">
-    <!-- loading spinner -->
-    <!--
-      Enable container queries to specify the radial progress --size using the cqmin unit.
-      In daisyUI v5.5.18, using the % unit breaks daisyUI's internal CSS calculations.
-    -->
-    <div
-      v-if="store.isBusy"
-      class="z-50 @container-[size] absolute inset-0 flex justify-center items-center bg-neutral/50"
-    >
-      <div class="w-[80cqmin] h-[80cqmin]">
-        <div
-          v-if="null != store.progress"
-          class="radial-progress text-primary text-[8vmin] m-auto"
-          role="progressbar"
-          :style="{
-            '--value': store.progress,
-          }"
-          style="--size: 80cqmin; --thickness: 2rem"
-          aria-valuenow="store.progress"
-        >
-          {{ store.progress }}%
-        </div>
-        <div v-else class="loading loading-spinner w-full text-primary"></div>
-      </div>
-    </div>
-    <!-- body -->
+    <LoadingIndicator />
     <div
       class="w-full h-full flex flex-col gap-2 p-2 bg-neutral text-neutral-content rounded-lg"
     >
