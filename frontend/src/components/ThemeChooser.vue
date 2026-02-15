@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { PaintBrushIcon } from "@heroicons/vue/24/solid";
-import { useI18n } from "vue-i18n";
-
 const _DEFAULT_THEME = "synthwave";
-
 const _DAISYUI_THEMES = [
   "light",
   "dark",
@@ -47,8 +44,6 @@ const _DAISYUI_THEMES = [
   "abyss",
   "silk",
 ];
-
-const { t } = useI18n();
 </script>
 
 <template>
