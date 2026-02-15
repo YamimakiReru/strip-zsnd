@@ -1,8 +1,8 @@
 "use strict";
 
-window._MESSAGES = {
+window.R_MESSAGES = {
   en: {
-    name: "English",
+    "app.locale_name": "English",
     "app.play": "Play",
     "app.pause": "Pause",
     "app.input_file_cannot_be_opened":
@@ -12,7 +12,7 @@ window._MESSAGES = {
       "Press Space or Enter to play/pause the audio.",
   },
   es: {
-    name: "Español",
+    "app.locale_name": "Español",
     "app.play": "Jugar",
     "app.pause": "Pausa",
     "app.input_file_cannot_be_opened":
@@ -22,7 +22,7 @@ window._MESSAGES = {
       "Presiona Espacio o Intro para reproducir/pausar el audio.",
   },
   ja: {
-    name: "日本語",
+    "app.locale_name": "日本語",
     "app.play": "再生",
     "app.pause": "停止",
     "app.input_file_cannot_be_opened":

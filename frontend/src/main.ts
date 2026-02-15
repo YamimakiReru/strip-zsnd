@@ -5,18 +5,18 @@ import { createPinia } from "pinia";
 import { createApp, App } from "vue";
 
 declare global {
-  const _MESSAGES: Record<string, any>;
+  const R_MESSAGES: Record<string, any>;
 }
 
 function _initI18n(app: App) {
   let locale = "en";
   for (const localeId of navigator.languages) {
-    if (localeId in _MESSAGES) {
+    if (localeId in R_MESSAGES) {
       locale = localeId;
       break;
     }
     const lang = localeId.split("-")[0];
-    if (lang in _MESSAGES) {
+    if (lang in R_MESSAGES) {
       locale = lang;
       break;
     }
@@ -26,7 +26,7 @@ function _initI18n(app: App) {
     legacy: false,
     locale,
     fallbackLocale: "en",
-    messages: _MESSAGES,
+    messages: R_MESSAGES,
   });
   app.use(i18n);
 }
