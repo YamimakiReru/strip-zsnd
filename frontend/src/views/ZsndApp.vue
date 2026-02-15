@@ -82,33 +82,35 @@ async function _callDetectService(audioData: WavDecoder.AudioData) {
 </script>
 
 <template>
-  <div class="fixed inset-0 portrait:md:p-4 lg:p-4">
+  <div class="relative w-full h-full portrait:md:p-4 lg:p-4">
     <!-- loading spinner -->
+    <!--
+      Enable container queries to specify the radial progress --size using the cqmin unit.
+      In daisyUI v5.5.18, using the % unit breaks daisyUI's internal CSS calculations.
+    -->
     <div
       v-if="store.isBusy"
-      class="z-50 fixed inset-0 bg-neutral/50 flex items-center justify-center"
+      class="z-50 @container-[size] absolute inset-0 flex justify-center items-center bg-neutral/50"
     >
-      <div
-        v-if="null != store.progress"
-        class="radial-progress text-primary text-5xl"
-        role="progressbar"
-        :style="{
-          '--value': store.progress,
-          '--size': '80vmin',
-          '--thickness': '2rem',
-        }"
-        :aria-valuenow="store.progress"
-      >
-        {{ store.progress }}%
+      <div class="w-[80cqmin] h-[80cqmin]">
+        <div
+          v-if="null != store.progress"
+          class="radial-progress text-primary text-[8vmin] m-auto"
+          role="progressbar"
+          :style="{
+            '--value': store.progress,
+          }"
+          style="--size: 80cqmin; --thickness: 2rem"
+          aria-valuenow="store.progress"
+        >
+          {{ store.progress }}%
+        </div>
+        <div v-else class="loading loading-spinner w-full text-primary"></div>
       </div>
-      <div
-        v-else
-        class="loading loading-spinner loading-xl -scale-800 text-primary"
-      ></div>
     </div>
     <!-- body -->
     <div
-      class="w-full h-full flex flex-col gap-2 max-w-5xl mx-auto p-2 bg-neutral text-neutral-content rounded-lg"
+      class="w-full h-full flex flex-col gap-2 p-2 bg-neutral text-neutral-content rounded-lg"
     >
       <div class="flex gap-2">
         <div class="flex flex-col landscape:flex-row md:flex-row gap-1">
@@ -134,7 +136,11 @@ async function _callDetectService(audioData: WavDecoder.AudioData) {
                   min="1"
                   required
                 />
-                <span class="label"><span class="hidden md:inline landscape:inline">ms</span></span>
+                <span class="label"
+                  ><span class="hidden md:inline landscape:inline"
+                    >ms</span
+                  ></span
+                >
               </label>
               <ul
                 tabindex="0"
@@ -148,7 +154,9 @@ async function _callDetectService(audioData: WavDecoder.AudioData) {
             <div class="dropdown dropdown-end">
               <label class="input input-sm md:input-md text-base-content">
                 <span class="label gap-0"
-                  >T<span class="hidden md:inline landscape:inline">hreshold</span></span
+                  >T<span class="hidden md:inline landscape:inline"
+                    >hreshold</span
+                  ></span
                 >
                 <input
                   type="number"
@@ -159,7 +167,11 @@ async function _callDetectService(audioData: WavDecoder.AudioData) {
                   max="0"
                   required
                 />
-                <span class="label"><span class="hidden md:inline landscape:inline">dB</span></span>
+                <span class="label"
+                  ><span class="hidden md:inline landscape:inline"
+                    >dB</span
+                  ></span
+                >
               </label>
               <ul
                 tabindex="0"
