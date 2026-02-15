@@ -2,9 +2,7 @@
 import { LanguageIcon } from "@heroicons/vue/24/solid";
 import { useI18n } from "vue-i18n";
 
-const _messages = _MESSAGES;
-const _languages = Object.keys(_MESSAGES);
-const { locale } = useI18n();
+const { locale, availableLocales, t } = useI18n();
 </script>
 
 <template>
@@ -16,14 +14,14 @@ const { locale } = useI18n();
       tabindex="-1"
       class="dropdown-content overflow-y-scroll max-h-[80vh] bg-base-300 text-base-content rounded-box z-10 w-32 p-2 shadow-2xl"
     >
-      <li v-for="lang in _languages" :key="lang">
+      <li v-for="lc in availableLocales" :key="lc">
         <input
           type="radio"
           class="w-full btn btn-block btn-ghost justify-start"
-          :aria-label="_messages[lang].name"
-          :value="lang"
-          :checked="locale === lang"
-          @change="locale = lang"
+          :aria-label="t('app.locale_name', {}, { locale: lc })"
+          :value="lc"
+          :checked="locale === lc"
+          @change="locale = lc"
         />
       </li>
     </ul>
