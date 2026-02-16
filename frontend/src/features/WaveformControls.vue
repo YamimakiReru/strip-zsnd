@@ -46,6 +46,7 @@ useWaveSurferHover({
   },
 });
 
+// Load the audio into wavesurfer.js after reading the file as a Blob.
 watch(
   () => audioStore.audioBlobForPreview,
   async (blob: Blob | null) => {

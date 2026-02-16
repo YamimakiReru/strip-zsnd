@@ -1,9 +1,7 @@
-import DetectZsndService from "@/services/DetectZsndService";
+import LoadAudioService from "@/services/LoadAudioService";
 import { ZsndWavChunk } from "@/services/wav_logic";
 import { useAppStore } from "@/stores/ZsndAppStore";
 
-import WavDecoder from "wav-decoder";
-import WavEncoder from "wav-encoder";
 import { useI18n } from "vue-i18n";
 import { ref } from "vue";
 import { defineStore } from "pinia";
@@ -16,27 +14,11 @@ export const useAudioStore = defineStore("zsAudio", () => {
   const threshold = ref(-80.0);
   const audioBlobForPreview = ref(null as Blob | null);
 
-  async function _callDetectService(audioData: WavDecoder.AudioData) {
-    const chunk = new ZsndWavChunk(audioData.channelData[0]);
-    const dropouts = await new DetectZsndService().detect(
-      {
-        reportProgress: (position, total) => {
-          store.setProgress((100 * position) / total);
-        },
-      },
-      chunk,
-      audioData.sampleRate,
-      minDurationInMs.value,
-      threshold.value,
-    );
-    const reArrBuf = WavEncoder.encode.sync(audioData, {
-      float: true,
-      bitDepth: 32,
-    });
-    audioBlobForPreview.value = new Blob([reArrBuf]);
-  }
+  /** Raw waveform samples used for editing. */
+  let rawAudioChunk = null as ZsndWavChunk<Float32Array> | null;
 
   return {
+    /** Blob objects are immutable, so storing them in a ref is safe. */
     audioBlobForPreview,
 
     /**
@@ -51,24 +33,23 @@ export const useAudioStore = defineStore("zsAudio", () => {
      */
     threshold,
 
-    setMinDuration(newMinDuration: number) {
-      minDurationInMs.value = Math.max(1, Math.round(newMinDuration));
-    },
-
-    setThreshold(newThreshold: number) {
-      threshold.value = Math.min(0, newThreshold);
-    },
-
     async loadFile(file: File) {
       store.incrementBusyCounter();
       try {
-        const arrBuf = await file.arrayBuffer();
-        const audioData = WavDecoder.decode.sync(arrBuf);
-        if (1 !== audioData.channelData.length) {
-          store.pushError(t("zsnd.mono_only_supported"));
-          return;
-        }
-        await _callDetectService(audioData);
+        const service = new LoadAudioService(t);
+        const results = await service.loadFile(
+          file,
+          minDurationInMs.value,
+          threshold.value,
+          {
+            reportProgress: (position, total) => {
+              store.setProgress((100 * position) / total);
+            },
+          },
+        );
+
+        rawAudioChunk = results.rawAudioChunk;
+        audioBlobForPreview.value = results.audioBlobForPreview;
       } catch (exc) {
         console.error(exc);
         const msg = exc instanceof Error ? exc.message : String(exc);
@@ -82,6 +63,14 @@ export const useAudioStore = defineStore("zsAudio", () => {
         store.decrementBusyCounter();
         store.clearProgress();
       }
+    },
+
+    setMinDuration(newMinDuration: number) {
+      minDurationInMs.value = Math.max(1, Math.round(newMinDuration));
+    },
+
+    setThreshold(newThreshold: number) {
+      threshold.value = Math.min(0, newThreshold);
     },
   };
 });
