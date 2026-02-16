@@ -1,4 +1,5 @@
 import LoadAudioService from "@/services/LoadAudioService";
+import { DropoutInfo } from "@/services/DetectZsndService";
 import { ZsndWavChunk } from "@/services/wav_logic";
 import { useAppStore } from "@/stores/ZsndAppStore";
 
@@ -13,6 +14,7 @@ export const useAudioStore = defineStore("zsAudio", () => {
   const minDurationInMs = ref(10);
   const threshold = ref(-80.0);
   const audioBlobForPreview = ref(null as Blob | null);
+  const dropouts = ref([] as DropoutInfo[]);
 
   /** Raw waveform samples used for editing. */
   let rawAudioChunk = null as ZsndWavChunk<Float32Array> | null;
@@ -33,6 +35,13 @@ export const useAudioStore = defineStore("zsAudio", () => {
      */
     threshold,
 
+    /**
+     * Detected dropout information.
+     * Each entry contains the dropout start position and duration,
+     * both expressed in samples.
+     */
+    dropouts,
+
     async loadFile(file: File) {
       store.incrementBusyCounter();
       try {
@@ -50,6 +59,7 @@ export const useAudioStore = defineStore("zsAudio", () => {
 
         rawAudioChunk = results.rawAudioChunk;
         audioBlobForPreview.value = results.audioBlobForPreview;
+        dropouts.value = results.dropouts;
       } catch (exc) {
         console.error(exc);
         const msg = exc instanceof Error ? exc.message : String(exc);

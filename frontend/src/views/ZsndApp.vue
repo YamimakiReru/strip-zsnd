@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useAudioStore } from "@/stores/AudioStore";
+import { useAppStore } from "@/stores/ZsndAppStore";
 import WaveformControls from "@/features/WaveformControls.vue";
 import InputBoxWithPreset from "@/components/InputBoxWithPreset.vue";
 import ThemeChooser from "@/components/ThemeChooser.vue";
@@ -9,9 +10,10 @@ import LoadingIndicator from "@/components/LoadingIndicator.vue";
 
 import { ClockIcon, SpeakerXMarkIcon } from "@heroicons/vue/16/solid";
 import { useI18n } from "vue-i18n";
-import { computed } from "vue";
+import { onMounted, onBeforeUnmount, computed, ref } from "vue";
 
 const { t } = useI18n();
+const store = useAppStore();
 const audioStore = useAudioStore();
 const minDuration = computed({
   get: () => audioStore.minDurationInMs,
@@ -20,6 +22,20 @@ const minDuration = computed({
 const threshold = computed({
   get: () => audioStore.threshold,
   set: (v: number) => audioStore.setThreshold(v),
+});
+
+const _notifyOrientationChange = (event: MediaQueryListEvent) => {
+  store.updateIsPortrait(event.matches);
+};
+onMounted(() => {
+  window
+    .matchMedia("(orientation: portrait)")
+    .addEventListener("change", _notifyOrientationChange);
+});
+onBeforeUnmount(() => {
+  window
+    .matchMedia("(orientation: portrait)")
+    .removeEventListener("change", _notifyOrientationChange);
 });
 
 async function _onFileChange(event: Event) {
@@ -41,9 +57,7 @@ async function _onFileChange(event: Event) {
 <template>
   <div class="relative w-full h-full portrait:md:p-4 lg:p-4">
     <LoadingIndicator />
-    <div
-      class="w-full h-full flex flex-col gap-2 p-2 bg-base-300 rounded-lg"
-    >
+    <div class="w-full h-full flex flex-col gap-2 p-2 bg-base-300 rounded-lg">
       <div class="flex gap-2">
         <div class="grow flex flex-col landscape:flex-row md:flex-row gap-1">
           <input
@@ -88,7 +102,7 @@ async function _onFileChange(event: Event) {
         </div>
       </div>
       <ErrorBox />
-      <WaveformControls ref="_waveformControls" class="grow" />
+      <WaveformControls class="grow" />
     </div>
   </div>
 </template>

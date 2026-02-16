@@ -38,6 +38,8 @@ export default class LoadAudioService {
       threshold,
     );
 
+    // wav-decoder returns audio as Float32Array,
+    // so using float32 is likely the most efficient.
     const reArrBuf = WavEncoder.encode.sync(audioData, {
       float: true,
       bitDepth: 32,
@@ -46,6 +48,7 @@ export default class LoadAudioService {
     return {
       rawAudioChunk,
       audioBlobForPreview: new Blob([reArrBuf]),
+      dropouts,
     };
   }
 }

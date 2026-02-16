@@ -5,6 +5,7 @@ export const useAppStore = defineStore("zsApp", () => {
   const errors = ref([] as string[]);
   const busyCounter = ref(0);
   const progress = ref(null as number | null);
+  const isPortrait = ref(false);
 
   return {
     /** Error messages. */
@@ -21,6 +22,9 @@ export const useAppStore = defineStore("zsApp", () => {
      * Valid range: 0 to 100.
      */
     progress,
+
+    /** Page orientation flag. "Portrait" usually corresponds to height > width, but not always. */
+    isPortrait,
 
     isBusy: computed(() => busyCounter.value > 0),
 
@@ -55,6 +59,11 @@ export const useAppStore = defineStore("zsApp", () => {
 
     clearProgress() {
       progress.value = null;
+    },
+
+    /** @see ZsndApp */
+    updateIsPortrait(newState: boolean) {
+      isPortrait.value = newState;
     },
   };
 });

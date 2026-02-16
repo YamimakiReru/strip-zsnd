@@ -3,6 +3,7 @@ import { useAudioStore } from "@/stores/AudioStore";
 import { useAppStore } from "@/stores/ZsndAppStore";
 import { formatAudioPosition } from "@/util";
 import WaveSurferZoomBar from "@/components/WaveSurferZoomBar.vue";
+import MovableDivider from "@/components/MovableDivider.vue";
 
 import WaveSurfer from "wavesurfer.js";
 import {
@@ -142,7 +143,11 @@ function _playPauseOnKeyUp(event: KeyboardEvent) {
         {{ formatAudioPosition(_ws.currentTime.value) }} /
         {{ formatAudioPosition(_ws.totalDuration.value) }}
       </div>
-      <WaveSurferZoomBar :wave-surfer="_rawWaveSurfer" :container="_waveSurferDivRef" class="grow" />
+      <WaveSurferZoomBar
+        :wave-surfer="_rawWaveSurfer"
+        :container="_waveSurferDivRef"
+        class="grow"
+      />
     </div>
     <div
       v-if="_ws.isReady.value"
@@ -152,6 +157,24 @@ function _playPauseOnKeyUp(event: KeyboardEvent) {
       <InformationCircleIcon class="w-6 h-6" />
       {{ t("zsnd.tips.keyboard_shortcut_play_pause") }}
     </div>
-    <div ref="_waveSurferDivRef" id="zs-waveform-controls" class="grow overflow-hidden"></div>
+    <div class="flex portrait:flex-col grow">
+      <div
+        ref="_waveSurferDivRef"
+        id="zs-waveform-controls"
+        class="overflow-hidden w-(--zs-waveform-ctl-width,60%) portrait:w-full portrait:h-(--zs-waveform-ctl-height,60%)"
+      ></div>
+      <MovableDivider
+        :resize-target="_waveSurferDivRef"
+        :css-property-name="
+          store.isPortrait
+            ? '--zs-waveform-ctl-height'
+            : '--zs-waveform-ctl-width'
+        "
+        :orientation="store.isPortrait ? 'vertical' : 'horizontal'"
+        :min="30"
+        :max="80"
+      />
+      <div class="grow"></div>
+    </div>
   </div>
 </template>
