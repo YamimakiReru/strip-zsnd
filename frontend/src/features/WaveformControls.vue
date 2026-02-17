@@ -20,6 +20,8 @@ const { t } = useI18n();
 const store = useAppStore();
 const audioStore = useAudioStore();
 
+let _positionAtPlayStart = 0;
+
 const _waveSurferDivRef = ref<HTMLElement | null>(null);
 const _ws = useWaveSurfer({
   containerRef: _waveSurferDivRef,
@@ -94,6 +96,16 @@ onBeforeUnmount(() => {
   window.removeEventListener("keyup", _playPauseOnKeyUp);
 });
 
+function _playPause() {
+  if (_ws.isPlaying.value) {
+    _ws.waveSurfer.value?.pause();
+    _ws.waveSurfer.value?.setTime(_positionAtPlayStart);
+  } else {
+    _positionAtPlayStart = _ws.waveSurfer.value?.getCurrentTime() ?? 0;
+    _ws.waveSurfer.value?.play();
+  }
+}
+
 function _playPauseOnKeyUp(event: KeyboardEvent) {
   if (event.defaultPrevented) {
     // the event was already processed by another component.
@@ -109,7 +121,7 @@ function _playPauseOnKeyUp(event: KeyboardEvent) {
   ) {
     return;
   }
-  _ws.waveSurfer.value?.playPause();
+  _playPause();
 }
 </script>
 
@@ -122,7 +134,7 @@ function _playPauseOnKeyUp(event: KeyboardEvent) {
     >
       <div class="flex items-center gap-2">
         <button
-          @click="_ws.waveSurfer.value?.playPause()"
+          @click="_playPause()"
           class="w-24 btn btn-primary"
         >
           {{ _ws.isPlaying.value ? t("app.pause") : t("app.play") }}
