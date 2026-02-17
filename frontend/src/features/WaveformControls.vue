@@ -61,6 +61,8 @@ watch(
       if (!_ws.waveSurfer.value) {
         throw new Error("waveSurfer must not be null.");
       }
+      // Generating the preview at the original sample rate is too costly.
+      // _ws.waveSurfer.value.setOptions({sampleRate: audioStore.originalSampleRate})
       await _ws.waveSurfer.value.loadBlob(blob);
       _ws.waveSurfer.value.seekTo(0);
     } finally {
@@ -112,7 +114,8 @@ function _playPauseOnKeyUp(event: KeyboardEvent) {
 </script>
 
 <template>
-  <div :class="$attrs.class" class="flex flex-col gap-2">
+  <!-- Without a defined min-height or min-width, a flex child with flex-grow may overflow its parent. -->
+  <div :class="$attrs.class" class="min-h-0 flex flex-col gap-2">
     <div
       v-if="_ws.isReady.value"
       class="flex flex-col md:flex-row landscape:flex-row gap-2"
@@ -157,7 +160,7 @@ function _playPauseOnKeyUp(event: KeyboardEvent) {
       <InformationCircleIcon class="w-6 h-6" />
       {{ t("zsnd.tips.keyboard_shortcut_play_pause") }}
     </div>
-    <div class="flex portrait:flex-col grow">
+    <div class="min-h-0 flex portrait:flex-col grow">
       <div
         ref="_waveSurferDivRef"
         id="zs-waveform-controls"
@@ -174,7 +177,31 @@ function _playPauseOnKeyUp(event: KeyboardEvent) {
         :min="30"
         :max="80"
       />
-      <div class="grow"></div>
+      <!-- By default, the daisyUI menu component uses flex-wrap, but I want the items to stay in a single column. -->
+      <ul
+        class="menu overflow-y-auto grow flex-nowrap portrait:h-0 portrait:w-full rounded-box"
+      >
+        <li v-for="d in audioStore.dropouts" :key="d.position">
+          <a
+            @click="
+              _ws.waveSurfer.value?.setTime?.(
+                d.position / audioStore.originalSampleRate,
+              )
+            "
+          >
+            {{
+              formatAudioPosition(d.position / audioStore.originalSampleRate)
+            }}
+            -
+            {{
+              formatAudioPosition(
+                (d.position + d.duration) / audioStore.originalSampleRate,
+              )
+            }}
+            ({{ d.duration }} samples)
+          </a>
+        </li>
+      </ul>
     </div>
   </div>
 </template>

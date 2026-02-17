@@ -13,6 +13,7 @@ export const useAudioStore = defineStore("zsAudio", () => {
 
   const minDurationInMs = ref(10);
   const threshold = ref(-80.0);
+  const originalSampleRate = ref(1);
   const audioBlobForPreview = ref(null as Blob | null);
   const dropouts = ref([] as DropoutInfo[]);
 
@@ -20,9 +21,6 @@ export const useAudioStore = defineStore("zsAudio", () => {
   let rawAudioChunk = null as ZsndWavChunk<Float32Array> | null;
 
   return {
-    /** Blob objects are immutable, so storing them in a ref is safe. */
-    audioBlobForPreview,
-
     /**
      * Minimum duration considered a dropout. Unit: milliseconds.
      * x > 0
@@ -34,6 +32,12 @@ export const useAudioStore = defineStore("zsAudio", () => {
      * x < 0
      */
     threshold,
+
+    /** The sample rate (Hz) of the original audio source. */
+    originalSampleRate,
+
+    /** Blob objects are immutable, so storing them in a ref is safe. */
+    audioBlobForPreview,
 
     /**
      * Detected dropout information.
@@ -58,6 +62,7 @@ export const useAudioStore = defineStore("zsAudio", () => {
         );
 
         rawAudioChunk = results.rawAudioChunk;
+        originalSampleRate.value = results.originalSampleRate;
         audioBlobForPreview.value = results.audioBlobForPreview;
         dropouts.value = results.dropouts;
       } catch (exc) {

@@ -47,6 +47,7 @@ export default class LoadAudioService {
 
     return {
       rawAudioChunk,
+      originalSampleRate: audioData.sampleRate,
       audioBlobForPreview: new Blob([reArrBuf]),
       dropouts,
     };
