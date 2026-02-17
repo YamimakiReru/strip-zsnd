@@ -7,16 +7,25 @@ import {
 import { formatAudioPosition } from "@/util";
 
 export interface DropoutInfo {
+  /**  The dropout start position in samples. */
   position: number;
+
+  /**  The dropout duration in samples. */
   duration: number;
 }
 
 export interface ZsndDetectionEventListener {
+  /**
+   * Reports the current progress of the detection process.
+   *
+   * @param position - Current position in samples.
+   * @param total - Total number of samples in the audio.
+   */
   reportProgress?: (position: number, total: number) => void;
 }
 
 export default class DetectZsndService {
-  private static _CHUNK_SIZE = 65536;
+  private static _CHUNK_SIZE = 32768;
 
   async detect(
     listener: ZsndDetectionEventListener,
@@ -47,7 +56,6 @@ export default class DetectZsndService {
       const subchunk = chunk.subarray(pos, pos + DetectZsndService._CHUNK_SIZE);
       numPrevTrailingZeros = this._collapse_chunk(
         dropoutInfoArray,
-        listener,
         subchunk,
         numPrevTrailingZeros,
         pos,
@@ -72,7 +80,6 @@ export default class DetectZsndService {
 
   private _collapse_chunk<T extends ArrayLike<number>>(
     dropoutInfoArray: DropoutInfo[],
-    lister: ZsndDetectionEventListener,
     chunk: ZsndWavChunk<T>,
     numPrevTrailingZeros: number,
     pos: number,
@@ -81,20 +88,20 @@ export default class DetectZsndService {
   ): number {
     const numLeadingZeros = chunk.countLeadingZeros(zeroSoundPredicate);
     console.debug(`Leading zeros: ${numLeadingZeros}`);
-
     let zeroRunLength = numPrevTrailingZeros + numLeadingZeros;
     if (chunk.size <= numLeadingZeros) {
       // all samples of the chunk were dropped
-      return numLeadingZeros;
+      return zeroRunLength;
     }
     if (zeroRunLength >= minDurationInSamples) {
       dropoutInfoArray.push({
-        position: pos - numLeadingZeros,
+        position: pos - numPrevTrailingZeros,
         duration: zeroRunLength,
       });
     }
-
-    let processedSamples = numLeadingZeros;
+    // In the Python implementation, this variable is only used when writing.
+    //
+    // let processedSamples = numLeadingZeros;
     let zeroRunStart;
     for ([zeroRunStart, zeroRunLength] of chunk.iterateInnerZeroRuns(
       zeroSoundPredicate,
@@ -106,12 +113,11 @@ export default class DetectZsndService {
         position: pos + zeroRunStart,
         duration: zeroRunLength,
       });
-      processedSamples = zeroRunStart + zeroRunLength;
+      // processedSamples = zeroRunStart + zeroRunLength;
     }
-
     const numTrailingZeros = chunk.countTrailingZeros(zeroSoundPredicate);
     console.debug(`Trailing zeros: ${numTrailingZeros}`);
-    return numLeadingZeros;
+    return numTrailingZeros;
   }
 
   private _createLoggingDropoutInfoArray() {

@@ -7,7 +7,7 @@ from typing import Iterable
 
 
 class StripZsndService(LogMixin):
-    _CHUNK_SIZE = 8192
+    _CHUNK_SIZE = 32768
 
     def strip(
         self,

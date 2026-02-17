@@ -14,9 +14,10 @@ const props = withDefaults(
     resizeTarget: HTMLElement | null;
 
     /**
-     * The CSS property that receives the size value.
-     * Use a CSS variable such as `#foo { width: var(--foo-size) }`
-     * or in Tailwind: `w-(--foo-size)`.
+     * The CSS custom property name that provides the size value.
+     *
+     * For example, you might pass `--foo-size`, which can then be used
+     * elsewhere as `var(--foo-size)` - including in Tailwind via `w-(--foo-size)`.
      */
     cssPropertyName: string;
 

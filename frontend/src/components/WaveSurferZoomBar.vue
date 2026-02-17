@@ -19,7 +19,7 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
-const _SLIDER_MAX = 10000;
+const _SLIDER_MAX = 1000;
 
 /**
  * The "zoom" value represents the minimum pixels per second of audio.
@@ -29,7 +29,7 @@ const _SLIDER_MAX = 10000;
  * @see https://wavesurfer.xyz/docs/types/wavesurfer.WaveSurferOptions
  */
 let _min_zoom = 1;
-const _MAX_ZOOM = 1000;
+const _MAX_ZOOM = 10000;
 const _zoomLevel = ref<number>(0);
 
 const _resizeObserver = new ResizeObserver(() => _recalculateMinZoom());
