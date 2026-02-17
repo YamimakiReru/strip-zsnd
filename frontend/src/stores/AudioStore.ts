@@ -75,8 +75,9 @@ export const useAudioStore = defineStore("zsAudio", () => {
         rawAudioChunk = results.rawAudioChunk;
         originalFilename.value = file.name;
         originalSampleRate.value = results.originalSampleRate;
-        audioBlobForPreview.value = results.audioBlobForPreview;
         dropouts.value = results.dropouts;
+
+        audioBlobForPreview.value = results.audioBlobForPreview;
       } catch (exc) {
         console.error(exc);
         const msg = exc instanceof Error ? exc.message : String(exc);

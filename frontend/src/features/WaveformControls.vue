@@ -8,6 +8,7 @@ import MovableDivider from "@/components/MovableDivider.vue";
 import WaveSurfer from "wavesurfer.js";
 import {
   useWaveSurfer,
+  useWaveSurferRegions,
   useWaveSurferTimeline,
   useWaveSurferMinimap,
   useWaveSurferHover,
@@ -29,6 +30,9 @@ const _ws = useWaveSurfer({
 });
 
 const _rawWaveSurfer = _ws.waveSurfer as Ref<WaveSurfer | null>;
+const { regionsPlugin: _regionsPlugin } = useWaveSurferRegions({
+  waveSurfer: _rawWaveSurfer,
+});
 useWaveSurferTimeline({
   waveSurfer: _rawWaveSurfer,
   timelineOptions: {
@@ -67,6 +71,19 @@ watch(
       // _ws.waveSurfer.value.setOptions({sampleRate: audioStore.originalSampleRate})
       await _ws.waveSurfer.value.loadBlob(blob);
       _ws.waveSurfer.value.seekTo(0);
+
+      const sampleRate = audioStore.originalSampleRate;
+      _regionsPlugin.value?.clearRegions();
+      for (const [i, d] of audioStore.dropouts.entries()) {
+        _regionsPlugin.value?.addRegion({
+          content: `[${i + 1}]`,
+          start: d.position / sampleRate,
+          end: (d.position + d.duration) / sampleRate,
+          color: "color-mix(in srgb, var(--color-error) 50%, transparent)",
+          drag: false,
+          resize: false,
+        });
+      }
     } finally {
       store.decrementBusyCounter();
     }
@@ -133,10 +150,7 @@ function _playPauseOnKeyUp(event: KeyboardEvent) {
       class="flex flex-col md:flex-row landscape:flex-row gap-2"
     >
       <div class="flex items-center gap-2">
-        <button
-          @click="_playPause()"
-          class="w-24 btn btn-primary"
-        >
+        <button @click="_playPause()" class="w-24 btn btn-primary">
           {{ _ws.isPlaying.value ? t("app.pause") : t("app.play") }}
         </button>
         <div class="join">
@@ -193,14 +207,16 @@ function _playPauseOnKeyUp(event: KeyboardEvent) {
       <ul
         class="menu overflow-y-auto grow flex-nowrap portrait:h-0 portrait:w-full rounded-box"
       >
-        <li v-for="d in audioStore.dropouts" :key="d.position">
+        <li v-for="(d, i) in audioStore.dropouts" :key="d.position">
           <a
+            class="md:text-base"
             @click="
               _ws.waveSurfer.value?.setTime?.(
                 d.position / audioStore.originalSampleRate,
               )
             "
           >
+            [{{ i + 1 }}]
             {{
               formatAudioPosition(d.position / audioStore.originalSampleRate)
             }}
@@ -209,8 +225,7 @@ function _playPauseOnKeyUp(event: KeyboardEvent) {
               formatAudioPosition(
                 (d.position + d.duration) / audioStore.originalSampleRate,
               )
-            }}
-            ({{ d.duration }} samples)
+            }}<wbr /> ({{ d.duration }} samples)
           </a>
         </li>
       </ul>
