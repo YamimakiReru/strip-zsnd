@@ -1,5 +1,25 @@
 import { defineStore } from "pinia";
-import { computed, ref } from "vue";
+import { onBeforeUnmount, onMounted, computed, ref } from "vue";
+
+/**
+ * A composable for handling orientation changes.
+ * @see https://vuejs.org/guide/reusability/composables
+ */
+export function usePortraitFlagUpdater() {
+  const store = useAppStore();
+  const matchesMedia = window.matchMedia("(orientation: portrait)");
+  store.updateIsPortrait(matchesMedia.matches);
+
+  const _notifyOrientationChange = (event: MediaQueryListEvent) => {
+    store.updateIsPortrait(event.matches);
+  };
+  onMounted(() => {
+    matchesMedia.addEventListener("change", _notifyOrientationChange);
+  });
+  onBeforeUnmount(() => {
+    matchesMedia.removeEventListener("change", _notifyOrientationChange);
+  });
+}
 
 export const useAppStore = defineStore("zsApp", () => {
   const errors = ref([] as string[]);

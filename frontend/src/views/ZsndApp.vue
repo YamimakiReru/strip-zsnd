@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAudioStore } from "@/stores/AudioStore";
-import { useAppStore } from "@/stores/ZsndAppStore";
+import { usePortraitFlagUpdater } from "@/stores/ZsndAppStore";
 import WaveformControls from "@/features/WaveformControls.vue";
 import InputBoxWithPreset from "@/components/InputBoxWithPreset.vue";
 import ThemeChooser from "@/components/ThemeChooser.vue";
@@ -10,10 +10,10 @@ import LoadingIndicator from "@/components/LoadingIndicator.vue";
 
 import { ClockIcon, SpeakerXMarkIcon } from "@heroicons/vue/16/solid";
 import { useI18n } from "vue-i18n";
-import { onMounted, onBeforeUnmount, computed, ref } from "vue";
+import { computed } from "vue";
 
 const { t } = useI18n();
-const store = useAppStore();
+usePortraitFlagUpdater();
 const audioStore = useAudioStore();
 const minDuration = computed({
   get: () => audioStore.minDurationInMs,
@@ -22,20 +22,6 @@ const minDuration = computed({
 const threshold = computed({
   get: () => audioStore.threshold,
   set: (v: number) => audioStore.setThreshold(v),
-});
-
-const _notifyOrientationChange = (event: MediaQueryListEvent) => {
-  store.updateIsPortrait(event.matches);
-};
-onMounted(() => {
-  window
-    .matchMedia("(orientation: portrait)")
-    .addEventListener("change", _notifyOrientationChange);
-});
-onBeforeUnmount(() => {
-  window
-    .matchMedia("(orientation: portrait)")
-    .removeEventListener("change", _notifyOrientationChange);
 });
 
 async function _onFileChange(event: Event) {
