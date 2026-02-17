@@ -187,7 +187,7 @@ function _playPauseOnKeyUp(event: KeyboardEvent) {
         "
         :orientation="store.isPortrait ? 'vertical' : 'horizontal'"
         :min="30"
-        :max="80"
+        :max="90"
       />
       <!-- By default, the daisyUI menu component uses flex-wrap, but I want the items to stay in a single column. -->
       <ul

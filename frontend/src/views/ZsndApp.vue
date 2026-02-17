@@ -9,8 +9,9 @@ import ErrorBox from "@/components/ErrorBox.vue";
 import LoadingIndicator from "@/components/LoadingIndicator.vue";
 
 import { ClockIcon, SpeakerXMarkIcon } from "@heroicons/vue/16/solid";
+import { ArrowPathIcon, ArrowDownIcon } from "@heroicons/vue/24/solid";
 import { useI18n } from "vue-i18n";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 const { t } = useI18n();
 usePortraitFlagUpdater();
@@ -22,6 +23,27 @@ const minDuration = computed({
 const threshold = computed({
   get: () => audioStore.threshold,
   set: (v: number) => audioStore.setThreshold(v),
+});
+
+const _confirmRerunDetectionDialog = ref<HTMLDialogElement | null>(null);
+
+const _downloadFilename = computed(() => {
+  if (!audioStore.originalFilename) {
+    return "audio.wav";
+  } else {
+    const dotPos = audioStore.originalFilename.lastIndexOf(".");
+    return -1 == dotPos
+      ? `${audioStore.originalFilename}-fix.wav`
+      : `${audioStore.originalFilename.substring(0, dotPos)}-fix.wav`;
+  }
+});
+
+const _downloadUrl = computed(() => {
+  if (audioStore.audioBlobForPreview) {
+    return URL.createObjectURL(audioStore.audioBlobForPreview);
+  } else {
+    return "";
+  }
 });
 
 async function _onFileChange(event: Event) {
@@ -38,6 +60,11 @@ async function _onFileChange(event: Event) {
     event.target.blur();
   }
 }
+
+function _doRerunDetection() {
+  audioStore.rerunDetection();
+  _confirmRerunDetectionDialog.value?.close();
+}
 </script>
 
 <template>
@@ -46,12 +73,32 @@ async function _onFileChange(event: Event) {
     <div class="w-full h-full flex flex-col gap-2 p-2 bg-base-300 rounded-lg">
       <div class="flex gap-2">
         <div class="grow flex flex-col landscape:flex-row md:flex-row gap-1">
-          <input
-            type="file"
-            @change="_onFileChange"
-            accept=".wav"
-            class="file-input file-input-sm md:file-input-md text-base-content/50"
-          />
+          <div class="join">
+            <input
+              type="file"
+              @change="_onFileChange"
+              accept=".wav"
+              class="file-input file-input-sm md:file-input-md text-base-content/50 join-item"
+            />
+            <button
+              type="button"
+              @click="_confirmRerunDetectionDialog?.showModal()"
+              :disabled="null == audioStore.audioBlobForPreview"
+              class="btn btn-sm md:btn-md join-item"
+            >
+              <ArrowPathIcon class="w-6 h-6" />
+            </button>
+            <a
+              :download="_downloadFilename"
+              :href="_downloadUrl"
+              class="btn btn-sm md:btn-md join-item"
+              :class="{
+                'btn-disabled': null == audioStore.audioBlobForPreview,
+              }"
+            >
+              <ArrowDownIcon class="w-6 h-6" />
+            </a>
+          </div>
           <div class="flex gap-2">
             <InputBoxWithPreset
               :label="t('zsnd.min_duration')"
@@ -90,5 +137,22 @@ async function _onFileChange(event: Event) {
       <ErrorBox />
       <WaveformControls class="grow" />
     </div>
+    <dialog ref="_confirmRerunDetectionDialog" class="modal">
+      <div class="modal-box">
+        <p class="py-4">{{t("zsnd.confirm_rerun_detection")}}</p>
+        <div class="modal-action">
+          <form method="dialog">
+            <button
+              type="button"
+              @click="_doRerunDetection"
+              class="btn btn-primary"
+            >
+              {{ t("app.yes") }}
+            </button>
+            <button class="btn">{{ t("app.no") }}</button>
+          </form>
+        </div>
+      </div>
+    </dialog>
   </div>
 </template>

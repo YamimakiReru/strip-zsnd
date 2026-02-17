@@ -1,5 +1,5 @@
+import DetectZsndService, { DropoutInfo } from "@/services/DetectZsndService";
 import LoadAudioService from "@/services/LoadAudioService";
-import { DropoutInfo } from "@/services/DetectZsndService";
 import { ZsndWavChunk } from "@/services/wav_logic";
 import { useAppStore } from "@/stores/ZsndAppStore";
 
@@ -13,6 +13,7 @@ export const useAudioStore = defineStore("zsAudio", () => {
 
   const minDurationInMs = ref(10);
   const threshold = ref(-80.0);
+  const originalFilename = ref("");
   const originalSampleRate = ref(1);
   const audioBlobForPreview = ref(null as Blob | null);
   const dropouts = ref([] as DropoutInfo[]);
@@ -33,6 +34,8 @@ export const useAudioStore = defineStore("zsAudio", () => {
      */
     threshold,
 
+    originalFilename,
+
     /** The sample rate (Hz) of the original audio source. */
     originalSampleRate,
 
@@ -45,6 +48,14 @@ export const useAudioStore = defineStore("zsAudio", () => {
      * both expressed in samples.
      */
     dropouts,
+
+    setMinDuration(newMinDuration: number) {
+      minDurationInMs.value = Math.max(1, Math.round(newMinDuration));
+    },
+
+    setThreshold(newThreshold: number) {
+      threshold.value = Math.min(0, newThreshold);
+    },
 
     async loadFile(file: File) {
       store.incrementBusyCounter();
@@ -62,6 +73,7 @@ export const useAudioStore = defineStore("zsAudio", () => {
         );
 
         rawAudioChunk = results.rawAudioChunk;
+        originalFilename.value = file.name;
         originalSampleRate.value = results.originalSampleRate;
         audioBlobForPreview.value = results.audioBlobForPreview;
         dropouts.value = results.dropouts;
@@ -80,12 +92,33 @@ export const useAudioStore = defineStore("zsAudio", () => {
       }
     },
 
-    setMinDuration(newMinDuration: number) {
-      minDurationInMs.value = Math.max(1, Math.round(newMinDuration));
-    },
+    async rerunDetection() {
+      if (null == rawAudioChunk) {
+        throw new Error("Attempt to rerun detection before loading a file!");
+      }
 
-    setThreshold(newThreshold: number) {
-      threshold.value = Math.min(0, newThreshold);
+      store.incrementBusyCounter();
+      try {
+        const service = new DetectZsndService();
+        dropouts.value = await service.detect(
+          {
+            reportProgress: (position, total) => {
+              store.setProgress((100 * position) / total);
+            },
+          },
+          rawAudioChunk,
+          originalSampleRate.value,
+          minDurationInMs.value,
+          threshold.value,
+        );
+      } catch (exc) {
+        console.error(exc);
+        const msg = exc instanceof Error ? exc.message : String(exc);
+        store.pushError(t("zsnd.error_during_dropout_detection", { exc: msg }));
+      } finally {
+        store.decrementBusyCounter();
+        store.clearProgress();
+      }
     },
   };
 });
