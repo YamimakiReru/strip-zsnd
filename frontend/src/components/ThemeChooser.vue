@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { PaintBrushIcon } from "@heroicons/vue/24/solid";
+import { PaintBrushIcon } from "@heroicons/vue/16/solid";
+import { useI18n } from "vue-i18n";
 
-const props = defineProps<{
-  defaultTheme?: string;
-
-  /** CSS class applied to the dropdown button.*/
-  buttonClass?: string;
-}>();
+const { t } = useI18n();
+const props = defineProps<{ defaultTheme?: string }>();
 
 const _DAISYUI_THEMES = [
   "light",
@@ -54,24 +51,23 @@ const _DAISYUI_THEMES = [
 </script>
 
 <template>
-  <div class="dropdown dropdown-end">
-    <div tabindex="0" role="button" class="btn" :class="buttonClass">
-      <PaintBrushIcon class="w-6 h-6" />
-    </div>
-    <ul
-      tabindex="-1"
-      class="dropdown-content overflow-y-scroll max-h-[80vh] bg-base-300 text-base-content rounded-box z-10 w-40 p-2 shadow-2xl"
-    >
-      <li v-for="theme of _DAISYUI_THEMES" :key="theme">
-        <input
-          type="radio"
-          name="theme-dropdown"
-          class="theme-controller w-full btn btn-sm btn-block btn-ghost justify-start"
-          :aria-label="theme"
-          :value="theme"
-          :checked="defaultTheme === theme"
-        />
-      </li>
-    </ul>
-  </div>
+  <li>
+    <details>
+      <summary>
+        <PaintBrushIcon class="w-4 h-4" />{{ t("app.theme") }}
+      </summary>
+      <ul>
+        <li v-for="theme of _DAISYUI_THEMES" :key="theme">
+          <input
+            type="radio"
+            name="theme-dropdown"
+            class="theme-controller btn btn-block btn-ghost"
+            :aria-label="theme"
+            :value="theme"
+            :checked="defaultTheme === theme"
+          />
+        </li>
+      </ul>
+    </details>
+  </li>
 </template>

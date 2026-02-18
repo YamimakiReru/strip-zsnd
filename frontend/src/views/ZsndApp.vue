@@ -8,8 +8,16 @@ import LanguageChooser from "@/components/LanguageChooser.vue";
 import ErrorBox from "@/components/ErrorBox.vue";
 import LoadingIndicator from "@/components/LoadingIndicator.vue";
 
-import { ClockIcon, SpeakerXMarkIcon } from "@heroicons/vue/16/solid";
-import { ArrowPathIcon, ArrowDownIcon } from "@heroicons/vue/24/solid";
+import {
+  MoonIcon as MoonIcon16,
+  ClockIcon,
+  SpeakerXMarkIcon,
+} from "@heroicons/vue/16/solid";
+import {
+  MoonIcon as MoonIcon24,
+  ArrowPathIcon,
+  ArrowDownIcon,
+} from "@heroicons/vue/24/solid";
 import { useI18n } from "vue-i18n";
 import { computed, ref } from "vue";
 
@@ -71,8 +79,21 @@ function _doRerunDetection() {
   <div class="relative w-full h-full portrait:md:p-4 lg:p-4">
     <LoadingIndicator />
     <div class="w-full h-full flex flex-col gap-2 p-2 bg-base-300 rounded-lg">
-      <div class="flex gap-2">
-        <div class="grow flex flex-col landscape:flex-row md:flex-row gap-1">
+      <div class="flex flex-col landscape:flex-row md:flex-row gap-2">
+        <div class="flex">
+          <div class="dropdown">
+            <div tabindex="0" role="button" class="btn btn-sm md:btn-md btn-neutral text-neutral-content">
+              <MoonIcon16 class="w-4 h-4 md:hidden" />
+              <MoonIcon24 class="w-6 h-6 hidden md:block" />
+            </div>
+            <ul
+              tabindex="-1"
+              class="dropdown-content menu flex-nowrap overflow-y-scroll max-h-[80vh] bg-base-100 rounded-box z-10 p-2 shadow-2xl"
+            >
+              <LanguageChooser />
+              <ThemeChooser default-theme="synthwave" />
+            </ul>
+          </div>
           <div class="join">
             <input
               type="file"
@@ -99,39 +120,32 @@ function _doRerunDetection() {
               <ArrowDownIcon class="w-6 h-6" />
             </a>
           </div>
-          <div class="flex gap-2">
-            <InputBoxWithPreset
-              :label="t('zsnd.min_duration')"
-              unit="ms"
-              v-model="minDuration"
-              :presets="[5, 10, 30, 50, 100]"
-              :input-attrs="{ step: 1, min: 1, required: true }"
-              input-container-class="input-sm md:input-md"
-            >
-              <template #icon>
-                <ClockIcon class="h-4 w-4" />
-              </template>
-            </InputBoxWithPreset>
-            <InputBoxWithPreset
-              :label="t('zsnd.threshold')"
-              unit="dB"
-              v-model="threshold"
-              :presets="[-80, -75, -70, -65, -60]"
-              :input-attrs="{ max: 0, required: true }"
-              input-container-class="input-sm md:input-md"
-            >
-              <template #icon>
-                <SpeakerXMarkIcon class="h-4 w-4" />
-              </template>
-            </InputBoxWithPreset>
-          </div>
         </div>
-        <div class="flex flex-col landscape:flex-row md:flex-row gap-1">
-          <ThemeChooser
-            button-class="btn-sm md:btn-md"
-            default-theme="synthwave"
-          />
-          <LanguageChooser button-class="btn-sm md:btn-md" />
+        <div class="flex gap-2">
+          <InputBoxWithPreset
+            :label="t('zsnd.min_duration')"
+            unit="ms"
+            v-model="minDuration"
+            :presets="[5, 10, 30, 50, 100]"
+            :input-attrs="{ step: 1, min: 1, required: true }"
+            input-container-class="input-sm md:input-md"
+          >
+            <template #icon>
+              <ClockIcon class="h-4 w-4" />
+            </template>
+          </InputBoxWithPreset>
+          <InputBoxWithPreset
+            :label="t('zsnd.threshold')"
+            unit="dB"
+            v-model="threshold"
+            :presets="[-80, -75, -70, -65, -60]"
+            :input-attrs="{ max: 0, required: true }"
+            input-container-class="input-sm md:input-md"
+          >
+            <template #icon>
+              <SpeakerXMarkIcon class="h-4 w-4" />
+            </template>
+          </InputBoxWithPreset>
         </div>
       </div>
       <ErrorBox />
@@ -139,7 +153,7 @@ function _doRerunDetection() {
     </div>
     <dialog ref="_confirmRerunDetectionDialog" class="modal">
       <div class="modal-box">
-        <p class="py-4">{{t("zsnd.confirm_rerun_detection")}}</p>
+        <p class="py-4">{{ t("zsnd.confirm_rerun_detection") }}</p>
         <div class="modal-action">
           <form method="dialog">
             <button

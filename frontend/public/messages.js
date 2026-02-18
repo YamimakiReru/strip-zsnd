@@ -6,6 +6,7 @@ window.R_MESSAGES = {
     "app.no": "No",
     "app.pause": "Pause",
     "app.play": "Play",
+    "app.theme": "Theme",
     "app.yes": "Yes",
     "app.zoom": "Zoom",
     "app.input_file_cannot_be_opened":
@@ -26,6 +27,7 @@ window.R_MESSAGES = {
     "app.pause": "Pausa",
     "app.play": "Jugar",
     "app.yes": "Si",
+    "app.theme": "Tema",
     "app.zoom": "Zoom",
     "app.input_file_cannot_be_opened":
       "No se puede abrir el archivo de entrada '{filename}': {exc}",
@@ -44,6 +46,7 @@ window.R_MESSAGES = {
     "app.no": "いいえ",
     "app.pause": "停止",
     "app.play": "再生",
+    "app.theme": "テーマ",
     "app.yes": "はい",
     "app.zoom": "拡大",
     "app.input_file_cannot_be_opened":
