@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DropoutView from "@/features/DropoutView.vue";
 import { useAudioStore } from "@/stores/AudioStore";
 import { useAppStore } from "@/stores/ZsndAppStore";
 import { formatAudioPosition } from "@/util";
@@ -8,7 +9,6 @@ import MovableDivider from "@/components/MovableDivider.vue";
 import WaveSurfer from "wavesurfer.js";
 import {
   useWaveSurfer,
-  useWaveSurferRegions,
   useWaveSurferTimeline,
   useWaveSurferMinimap,
   useWaveSurferHover,
@@ -30,9 +30,6 @@ const _ws = useWaveSurfer({
 });
 
 const _rawWaveSurfer = _ws.waveSurfer as Ref<WaveSurfer | null>;
-const { regionsPlugin: _regionsPlugin } = useWaveSurferRegions({
-  waveSurfer: _rawWaveSurfer,
-});
 useWaveSurferTimeline({
   waveSurfer: _rawWaveSurfer,
   timelineOptions: {
@@ -53,6 +50,8 @@ useWaveSurferHover({
   },
 });
 
+const _dropoutView = ref<InstanceType<typeof DropoutView> | null>(null);
+
 // Load the audio into wavesurfer.js after reading the file as a Blob.
 watch(
   () => audioStore.audioBlobForPreview,
@@ -70,20 +69,8 @@ watch(
       // Generating the preview at the original sample rate is too costly.
       // _ws.waveSurfer.value.setOptions({sampleRate: audioStore.originalSampleRate})
       await _ws.waveSurfer.value.loadBlob(blob);
+      await _dropoutView.value?.refresh();
       _ws.waveSurfer.value.seekTo(0);
-
-      const sampleRate = audioStore.originalSampleRate;
-      _regionsPlugin.value?.clearRegions();
-      for (const [i, d] of audioStore.dropouts.entries()) {
-        _regionsPlugin.value?.addRegion({
-          content: `[${i + 1}]`,
-          start: d.position / sampleRate,
-          end: (d.position + d.duration) / sampleRate,
-          color: "color-mix(in srgb, var(--color-error) 50%, transparent)",
-          drag: false,
-          resize: false,
-        });
-      }
     } finally {
       store.decrementBusyCounter();
     }
@@ -203,32 +190,7 @@ function _playPauseOnKeyUp(event: KeyboardEvent) {
         :min="30"
         :max="90"
       />
-      <!-- By default, the daisyUI menu component uses flex-wrap, but I want the items to stay in a single column. -->
-      <ul
-        class="menu overflow-y-auto grow flex-nowrap portrait:h-0 portrait:w-full rounded-box"
-      >
-        <li v-for="(d, i) in audioStore.dropouts" :key="d.position">
-          <a
-            class="md:text-base"
-            @click="
-              _ws.waveSurfer.value?.setTime?.(
-                d.position / audioStore.originalSampleRate,
-              )
-            "
-          >
-            [{{ i + 1 }}]
-            {{
-              formatAudioPosition(d.position / audioStore.originalSampleRate)
-            }}
-            -
-            {{
-              formatAudioPosition(
-                (d.position + d.duration) / audioStore.originalSampleRate,
-              )
-            }}<wbr /> ({{ d.duration }} samples)
-          </a>
-        </li>
-      </ul>
+      <DropoutView ref="_dropoutView" :wave-surfer="_rawWaveSurfer" />
     </div>
   </div>
 </template>
