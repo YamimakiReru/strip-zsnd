@@ -5,58 +5,75 @@ import { formatAudioPosition } from "@/util";
 
 import WaveSurfer from "wavesurfer.js";
 import { useWaveSurferRegions } from "@meersagor/wavesurfer-vue";
-import { Ref, ref } from "vue";
+import { watch } from "vue";
 
 const props = defineProps<{
   waveSurfer: WaveSurfer | null;
+
+  /**
+   * Vue wrapper for the `@meersagor/wavesurfer-vue` version of the
+   * WaveSurfer Regions plugin.
+   *
+   * (In 2.0.2)
+   * This component requires the WaveSurfer instance to already exist
+   * before the component is mounted.
+   *
+   * In Vue, child components mount before their parents, so a plugin
+   * wrapper cannot create its plugin during onMounted if the parent
+   * hasn't finished creating WaveSurfer yet.
+   *
+   * Therefore, plugin initialization must happen in the parent (or any
+   * ancestor) that owns the WaveSurfer instance.
+   */
+  regionsPlugin: ReturnType<
+    typeof useWaveSurferRegions
+  >["regionsPlugin"]["value"];
 }>();
-defineExpose({
-  refresh,
-});
 
 const audioStore = useAudioStore();
 const store = useAppStore();
 
-const { regionsPlugin: _regionsPlugin } = useWaveSurferRegions({
-  waveSurfer: ref(props.waveSurfer) as Ref<WaveSurfer | null>,
-});
-
-/**
- * Must be called explicitly by the parent view.
- * WaveSurfer loads and decodes audio asynchronously, so this component
- * cannot refresh itself automatically when the audio becomes available.
- */
-async function refresh() {
-  store.incrementBusyCounter();
-  try {
-    const sampleRate = audioStore.originalSampleRate;
-    _regionsPlugin.value?.clearRegions();
-    for (const [i, d] of audioStore.dropouts.entries()) {
-      _regionsPlugin.value?.addRegion({
-        content: `[${i + 1}]`,
-        start: d.position / sampleRate,
-        end: (d.position + d.duration) / sampleRate,
-        color: "color-mix(in srgb, var(--color-error) 50%, transparent)",
-        drag: false,
-        resize: false,
-      });
+watch(
+  () => [audioStore.dropouts, props.waveSurfer?.getDuration?.()],
+  // This code assumes that getDuration() returns 0 or a shorter value before loading completes.
+  ([dropouts, isReady]) => {
+    store.incrementBusyCounter();
+    try {
+      const sampleRate = audioStore.originalSampleRate;
+      props.regionsPlugin?.clearRegions();
+      if (!isReady) {
+        return;
+      }
+      for (const [i, d] of (dropouts as any).entries()) {
+        props.regionsPlugin?.addRegion({
+          content: `[${i + 1}]`,
+          start: d.position / sampleRate,
+          end: (d.position + d.duration) / sampleRate,
+          color: "color-mix(in srgb, var(--color-error) 50%, transparent)",
+          drag: false,
+          resize: false,
+        });
+      }
+    } finally {
+      store.decrementBusyCounter();
     }
-  } finally {
-    store.decrementBusyCounter();
-  }
-}
+  },
+);
 </script>
 
 <template>
   <!-- By default, the daisyUI menu component uses flex-wrap, but I want the items to stay in a single column. -->
   <ul
-    class="menu overflow-y-auto grow flex-nowrap portrait:h-0 portrait:w-full rounded-box"
+    class="menu flex-nowrap overflow-y-auto rounded-box"
+    :class="$attrs.class"
   >
     <li v-for="(d, i) in audioStore.dropouts" :key="d.position">
       <a
         class="md:text-base"
         @click="
-          waveSurfer?.setTime?.(d.position / audioStore.originalSampleRate)
+          props.waveSurfer?.setTime?.(
+            d.position / audioStore.originalSampleRate,
+          )
         "
       >
         [{{ i + 1 }}]

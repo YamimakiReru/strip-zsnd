@@ -12,6 +12,7 @@ import {
   useWaveSurferTimeline,
   useWaveSurferMinimap,
   useWaveSurferHover,
+  useWaveSurferRegions,
 } from "@meersagor/wavesurfer-vue";
 import { InformationCircleIcon } from "@heroicons/vue/24/solid";
 import { useI18n } from "vue-i18n";
@@ -49,8 +50,9 @@ useWaveSurferHover({
     formatTimeCallback: formatAudioPosition,
   },
 });
-
-const _dropoutView = ref<InstanceType<typeof DropoutView> | null>(null);
+const { regionsPlugin: _regionsPlugin } = useWaveSurferRegions({
+  waveSurfer: _rawWaveSurfer,
+});
 
 // Load the audio into wavesurfer.js after reading the file as a Blob.
 watch(
@@ -69,7 +71,6 @@ watch(
       // Generating the preview at the original sample rate is too costly.
       // _ws.waveSurfer.value.setOptions({sampleRate: audioStore.originalSampleRate})
       await _ws.waveSurfer.value.loadBlob(blob);
-      await _dropoutView.value?.refresh();
       _ws.waveSurfer.value.seekTo(0);
     } finally {
       store.decrementBusyCounter();
@@ -190,7 +191,11 @@ function _playPauseOnKeyUp(event: KeyboardEvent) {
         :min="30"
         :max="90"
       />
-      <DropoutView ref="_dropoutView" :wave-surfer="_rawWaveSurfer" />
+      <DropoutView
+        :wave-surfer="_rawWaveSurfer"
+        :regions-plugin="_regionsPlugin"
+        class="grow portrait:h-0 portrait:w-full"
+      />
     </div>
   </div>
 </template>
