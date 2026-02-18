@@ -6,6 +6,7 @@ import { createApp, App } from "vue";
 
 declare global {
   const R_MESSAGES: Record<string, any>;
+  const __APP_VERSION__: string;
 }
 
 function _initI18n(app: App) {

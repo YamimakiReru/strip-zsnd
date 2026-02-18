@@ -1,11 +1,15 @@
 import { minify } from "@swc/core";
 import { DefinePlugin } from "@rspack/core";
 import { VueLoaderPlugin } from "vue-loader";
+import { createRequire } from "module";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import path from "path";
 import { defineConfig } from "@rspack/cli";
 import { rspack } from "@rspack/core";
+
+const require = createRequire(import.meta.url);
+const { version } = require("./package.json");
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -81,6 +85,7 @@ export default defineConfig({
   },
   plugins: [
     new DefinePlugin({
+      __APP_VERSION__: JSON.stringify(version),
       __VUE_OPTIONS_API__: JSON.stringify(true),
       __VUE_PROD_DEVTOOLS__: JSON.stringify(true),
       __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: JSON.stringify(false),

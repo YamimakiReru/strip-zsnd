@@ -12,6 +12,7 @@ import {
   MoonIcon as MoonIcon16,
   ClockIcon,
   SpeakerXMarkIcon,
+  ArrowTopRightOnSquareIcon,
 } from "@heroicons/vue/16/solid";
 import {
   MoonIcon as MoonIcon24,
@@ -24,6 +25,9 @@ import { computed, ref } from "vue";
 const { t } = useI18n();
 usePortraitFlagUpdater();
 const audioStore = useAudioStore();
+
+const _VERSION = __APP_VERSION__;
+
 const minDuration = computed({
   get: () => audioStore.minDurationInMs,
   set: (v: number) => audioStore.setMinDuration(v),
@@ -34,6 +38,7 @@ const threshold = computed({
 });
 
 const _confirmRerunDetectionDialog = ref<HTMLDialogElement | null>(null);
+const _aboutDialog = ref<HTMLDialogElement | null>(null);
 
 const _downloadFilename = computed(() => {
   if (!audioStore.originalFilename) {
@@ -82,7 +87,11 @@ function _doRerunDetection() {
       <div class="flex flex-col landscape:flex-row md:flex-row gap-2">
         <div class="flex">
           <div class="dropdown">
-            <div tabindex="0" role="button" class="btn btn-sm md:btn-md btn-neutral text-neutral-content">
+            <div
+              tabindex="0"
+              role="button"
+              class="btn btn-sm md:btn-md btn-neutral text-neutral-content"
+            >
               <MoonIcon16 class="w-4 h-4 md:hidden" />
               <MoonIcon24 class="w-6 h-6 hidden md:block" />
             </div>
@@ -92,6 +101,7 @@ function _doRerunDetection() {
             >
               <LanguageChooser />
               <ThemeChooser default-theme="synthwave" />
+              <li><a @click="_aboutDialog?.showModal()">About</a></li>
             </ul>
           </div>
           <div class="join">
@@ -167,6 +177,42 @@ function _doRerunDetection() {
           </form>
         </div>
       </div>
+    </dialog>
+    <dialog ref="_aboutDialog" class="modal">
+      <div class="modal-box">
+        <h3 class="text-lg font-bold">
+          <MoonIcon24 class="w-6 h-6 inline" />
+          {{ t("app.title") }}
+        </h3>
+        <p class="pt-4 text-right">
+          <a
+            class="link"
+            href="https://github.com/YamimakiReru/strip-zsnd"
+            target="_blank"
+            ><ArrowTopRightOnSquareIcon class="w-4 h-4 inline" />
+            https://github.com/YamimakiReru/strip-zsnd</a
+          ><br />
+          Copyright (c) 2026
+          <a
+            class="link"
+            href="https://gravatar.com/happilybeliever334e7100d5"
+            target="_blank"
+            >YAMIMAKI, Reru</a
+          >
+        </p>
+        <p class="pt-4 text-right">
+          Licensed under the MIT License.<br />
+          Version {{ _VERSION }}
+        </p>
+        <div class="modal-action">
+          <form method="dialog">
+            <button class="btn">OK</button>
+          </form>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button>OK</button>
+      </form>
     </dialog>
   </div>
 </template>

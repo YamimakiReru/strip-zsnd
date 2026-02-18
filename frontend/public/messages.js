@@ -3,6 +3,7 @@
 window.R_MESSAGES = {
   en: {
     "app.locale_name": "English",
+    "app.title": "Strip consecutive zero samples in WAV files",
     "app.no": "No",
     "app.pause": "Pause",
     "app.play": "Play",
@@ -23,6 +24,7 @@ window.R_MESSAGES = {
   },
   es: {
     "app.locale_name": "Español",
+    "app.title": "Una herramienta para eliminar las muestras cero que faltan en un archivo WAV",
     "app.no": "No",
     "app.pause": "Pausa",
     "app.play": "Jugar",
@@ -43,6 +45,7 @@ window.R_MESSAGES = {
   },
   ja: {
     "app.locale_name": "日本語",
+    "app.title": "WAVファイルの欠落0サンプルを除去するツール",
     "app.no": "いいえ",
     "app.pause": "停止",
     "app.play": "再生",
