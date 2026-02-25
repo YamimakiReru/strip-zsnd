@@ -2,6 +2,26 @@ import { DropoutInfo } from "@/services/DetectZsndService";
 import { ZsndWavChunk } from "@/services/wav_logic";
 
 export default class TrimDropoutsService {
+  trimAt(
+    chunk: ZsndWavChunk<Float32Array>,
+    dropouts: DropoutInfo[],
+    index: number,
+  ): { newChunk: ZsndWavChunk<Float32Array>; newDropouts: DropoutInfo[] } {
+    const newChunk = this.trimAll(chunk, [dropouts[index]]);
+
+    // Shifts the following elements left by the removed element's length.
+    const newDropouts = dropouts.slice(0, index);
+    const offset = dropouts[index].duration;
+    for (let i = index + 1; i < dropouts.length; ++i) {
+      newDropouts.push({
+        position: dropouts[i].position - offset,
+        duration: dropouts[i].duration,
+      });
+    }
+
+    return { newChunk, newDropouts };
+  }
+
   trimAll(
     chunk: ZsndWavChunk<Float32Array>,
     dropouts: DropoutInfo[],

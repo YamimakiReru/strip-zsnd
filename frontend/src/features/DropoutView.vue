@@ -75,7 +75,12 @@ watch(
       v-for="(d, i) in audioStore.dropouts"
       :key="d.position"
     >
-      <button type="button" :title="t('app.trim')" class="btn btn-square">
+      <button
+        type="button"
+        :title="t('app.trim')"
+        @click="audioStore.trimDropoutAt(i)"
+        class="btn btn-square"
+      >
         <ScissorsIcon class="w-6 h-6" />
       </button>
       <a

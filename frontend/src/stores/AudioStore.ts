@@ -187,6 +187,26 @@ export const useAudioStore = defineStore("zsAudio", () => {
       }
     },
 
+    async trimDropoutAt(index: number) {
+      store.incrementBusyCounter();
+      try {
+        const currentEntry = undoBuffer.value[undoBufferIndex.value];
+        const { newChunk, newDropouts } = new TrimDropoutsService().trimAt(
+          currentEntry.rawAudioChunk as ZsndWavChunk<Float32Array>,
+          currentEntry.dropouts,
+          index,
+        );
+        const newBlob = new LoadAudioService(t).loadFromChunk(
+          newChunk,
+          originalSampleRate.value,
+        );
+        const newEntry = new _UndoBufferEntry(newChunk, newBlob, newDropouts);
+        pushUndoBufferEntry(newEntry);
+      } finally {
+        store.decrementBusyCounter();
+      }
+    },
+
     async trimAllDropouts() {
       store.incrementBusyCounter();
       try {
