@@ -1,3 +1,4 @@
+import TrimDropoutsService from "@/services/TrimDropoutsService";
 import DetectZsndService, { DropoutInfo } from "@/services/DetectZsndService";
 import LoadAudioService from "@/services/LoadAudioService";
 import { ZsndWavChunk } from "@/services/wav_logic";
@@ -31,9 +32,14 @@ export const useAudioStore = defineStore("zsAudio", () => {
   const undoBufferIndex = ref(0);
 
   function pushUndoBufferEntry(newEntry: _UndoBufferEntry) {
+    // Removes all entries strictly after the current index.
+    undoBuffer.value.splice(undoBufferIndex.value + 1);
+
     if (MAX_UNDO_COUNT <= undoBuffer.value.length) {
       undoBuffer.value.shift();
+      --undoBufferIndex.value;
     }
+
     undoBuffer.value.push(newEntry);
     ++undoBufferIndex.value;
   }
@@ -170,7 +176,6 @@ export const useAudioStore = defineStore("zsAudio", () => {
           currentEntry.audioBlobForPreview,
           dropouts,
         );
-        undoBuffer.value.splice(undoBufferIndex.value + 1);
         pushUndoBufferEntry(newEntry);
       } catch (exc) {
         console.error(exc);
@@ -179,6 +184,25 @@ export const useAudioStore = defineStore("zsAudio", () => {
       } finally {
         store.decrementBusyCounter();
         store.clearProgress();
+      }
+    },
+
+    async trimAllDropouts() {
+      store.incrementBusyCounter();
+      try {
+        const currentEntry = undoBuffer.value[undoBufferIndex.value];
+        const newChunk = new TrimDropoutsService().trimAll(
+          currentEntry.rawAudioChunk as ZsndWavChunk<Float32Array>,
+          currentEntry.dropouts,
+        );
+        const newBlob = new LoadAudioService(t).loadFromChunk(
+          newChunk,
+          originalSampleRate.value,
+        );
+        const newEntry = new _UndoBufferEntry(newChunk, newBlob, []);
+        pushUndoBufferEntry(newEntry);
+      } finally {
+        store.decrementBusyCounter();
       }
     },
   };

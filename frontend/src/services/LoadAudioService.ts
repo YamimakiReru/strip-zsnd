@@ -4,8 +4,9 @@ import DetectZsndService, {
 import { ZsndWavChunk } from "@/services/wav_logic";
 import { HumanReadableError } from "@/util";
 
-import WavDecoder from "wav-decoder";
-import WavEncoder from "wav-encoder";
+import * as WavDecoder from "wav-decoder";
+import * as WavEncoder from "wav-encoder";
+import { AudioData } from "wav-encoder";
 
 export default class LoadAudioService {
   private readonly t;
@@ -38,6 +39,25 @@ export default class LoadAudioService {
       threshold,
     );
 
+    const audioBlobForPreview = this.loadFromChunk(
+      rawAudioChunk,
+      audioData.sampleRate,
+    );
+
+    return {
+      rawAudioChunk,
+      originalSampleRate: audioData.sampleRate,
+      audioBlobForPreview,
+      dropouts,
+    };
+  }
+
+  loadFromChunk(chunk: ZsndWavChunk<Float32Array>, sampleRate: number): Blob {
+    const audioData = {
+      sampleRate,
+      channelData: [chunk.raw()],
+    };
+
     // wav-decoder returns audio as Float32Array,
     // so using float32 is likely the most efficient.
     const reArrBuf = WavEncoder.encode.sync(audioData, {
@@ -45,11 +65,6 @@ export default class LoadAudioService {
       bitDepth: 32,
     });
 
-    return {
-      rawAudioChunk,
-      originalSampleRate: audioData.sampleRate,
-      audioBlobForPreview: new Blob([reArrBuf], { type: "audio/wav" }),
-      dropouts,
-    };
+    return new Blob([reArrBuf], { type: "audio/wav" });
   }
 }

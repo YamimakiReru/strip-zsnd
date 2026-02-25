@@ -30,7 +30,7 @@ const _ws = useWaveSurfer({
   options: { normalize: true, autoCenter: true },
 });
 
-const _rawWaveSurfer = _ws.waveSurfer as Ref<WaveSurfer | null>;
+const _rawWaveSurfer = _ws.waveSurfer as any as Ref<WaveSurfer | null>;
 useWaveSurferTimeline({
   waveSurfer: _rawWaveSurfer,
   timelineOptions: {

@@ -14,6 +14,10 @@ export class ZsndWavChunk<T extends ArrayLike<number>> {
     this.size = frames.length;
   }
 
+  public raw() {
+    return this._frames;
+  }
+
   public countLeadingZeros(predicate: ZeroSoundPredicate<T>): number {
     for (let i = 0; i < this._frames.length; ++i) {
       if (!predicate.isZeroSoundSample(this._frames, i)) {

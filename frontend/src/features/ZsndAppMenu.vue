@@ -5,6 +5,7 @@ import LanguageChooser from "@/components/LanguageChooser.vue";
 
 import {
   ArrowDownOnSquareIcon,
+  ArrowTopRightOnSquareIcon,
   MoonIcon as MoonIcon16,
   ScissorsIcon,
 } from "@heroicons/vue/16/solid";
@@ -60,7 +61,9 @@ const _downloadUrl = computed(() => {
         </a>
       </li>
       <li :class="{ 'menu-disabled': null == audioStore.audioBlobForPreview }">
-        <a><ScissorsIcon class="w-4 h-4" />{{ t("zend.trim_all_dropouts") }}</a>
+        <a @click="audioStore.trimAllDropouts()"
+          ><ScissorsIcon class="w-4 h-4" />{{ t("zend.trim_all_dropouts") }}</a
+        >
       </li>
       <hr class="my-2" />
       <LanguageChooser />
