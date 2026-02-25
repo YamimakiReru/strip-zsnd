@@ -8,7 +8,11 @@ import ErrorBox from "@/components/ErrorBox.vue";
 import LoadingIndicator from "@/components/LoadingIndicator.vue";
 
 import { ClockIcon, SpeakerXMarkIcon } from "@heroicons/vue/16/solid";
-import { ArrowPathIcon } from "@heroicons/vue/24/solid";
+import {
+  ArrowPathIcon,
+  ArrowUturnLeftIcon,
+  ArrowUturnRightIcon,
+} from "@heroicons/vue/24/solid";
 import { useI18n } from "vue-i18n";
 import { computed, ref } from "vue";
 
@@ -70,6 +74,24 @@ function _doRerunDetection() {
               class="btn btn-sm md:btn-md join-item"
             >
               <ArrowPathIcon class="w-6 h-6" />
+            </button>
+            <button
+              type="button"
+              :title="t('app.undo')"
+              @click="audioStore.undo()"
+              :disabled="!audioStore.canUndo"
+              class="btn btn-sm md:btn-md join-item"
+            >
+              <ArrowUturnLeftIcon class="w-6 h-6" />
+            </button>
+            <button
+              type="button"
+              :title="t('app.redo')"
+              @click="audioStore.redo()"
+              :disabled="!audioStore.canRedo"
+              class="btn btn-sm md:btn-md join-item"
+            >
+              <ArrowUturnRightIcon class="w-6 h-6" />
             </button>
           </div>
         </div>

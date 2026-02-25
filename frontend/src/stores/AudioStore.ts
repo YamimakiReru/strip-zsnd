@@ -4,8 +4,19 @@ import { ZsndWavChunk } from "@/services/wav_logic";
 import { useAppStore } from "@/stores/ZsndAppStore";
 
 import { useI18n } from "vue-i18n";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { defineStore } from "pinia";
+
+const MAX_UNDO_COUNT = 100;
+
+class _UndoBufferEntry {
+  constructor(
+    /** Raw waveform samples used for editing. */
+    public readonly rawAudioChunk: ZsndWavChunk<Float32Array>,
+    public readonly audioBlobForPreview: Blob,
+    public readonly dropouts: DropoutInfo[],
+  ) {}
+}
 
 export const useAudioStore = defineStore("zsAudio", () => {
   const { t } = useI18n();
@@ -15,11 +26,17 @@ export const useAudioStore = defineStore("zsAudio", () => {
   const threshold = ref(-80.0);
   const originalFilename = ref("");
   const originalSampleRate = ref(1);
-  const audioBlobForPreview = ref(null as Blob | null);
-  const dropouts = ref([] as DropoutInfo[]);
 
-  /** Raw waveform samples used for editing. */
-  let rawAudioChunk = null as ZsndWavChunk<Float32Array> | null;
+  const undoBuffer = ref([] as _UndoBufferEntry[]);
+  const undoBufferIndex = ref(0);
+
+  function pushUndoBufferEntry(newEntry: _UndoBufferEntry) {
+    if (MAX_UNDO_COUNT <= undoBuffer.value.length) {
+      undoBuffer.value.shift();
+    }
+    undoBuffer.value.push(newEntry);
+    ++undoBufferIndex.value;
+  }
 
   return {
     /**
@@ -40,14 +57,30 @@ export const useAudioStore = defineStore("zsAudio", () => {
     originalSampleRate,
 
     /** Blob objects are immutable, so storing them in a ref is safe. */
-    audioBlobForPreview,
+    audioBlobForPreview: computed(() =>
+      0 == undoBuffer.value.length
+        ? null
+        : undoBuffer.value[undoBufferIndex.value].audioBlobForPreview,
+    ),
 
     /**
      * Detected dropout information.
      * Each entry contains the dropout start position and duration,
      * both expressed in samples.
      */
-    dropouts,
+    dropouts: computed(() =>
+      0 == undoBuffer.value.length
+        ? null
+        : undoBuffer.value[undoBufferIndex.value].dropouts,
+    ),
+
+    canUndo: computed(
+      () => 0 < undoBuffer.value.length && 0 < undoBufferIndex.value,
+    ),
+
+    canRedo: computed(
+      () => undoBufferIndex.value < undoBuffer.value.length - 1,
+    ),
 
     setMinDuration(newMinDuration: number) {
       minDurationInMs.value = Math.max(1, Math.round(newMinDuration));
@@ -55,6 +88,20 @@ export const useAudioStore = defineStore("zsAudio", () => {
 
     setThreshold(newThreshold: number) {
       threshold.value = Math.min(0, newThreshold);
+    },
+
+    undo() {
+      if (0 >= undoBufferIndex.value) {
+        throw new RangeError("No more undo steps!");
+      }
+      --undoBufferIndex.value;
+    },
+
+    redo() {
+      if (undoBuffer.value.length <= undoBufferIndex.value + 1) {
+        throw new RangeError("No more redo steps!");
+      }
+      ++undoBufferIndex.value;
     },
 
     async loadFile(file: File) {
@@ -71,13 +118,15 @@ export const useAudioStore = defineStore("zsAudio", () => {
             },
           },
         );
-
-        rawAudioChunk = results.rawAudioChunk;
         originalFilename.value = file.name;
         originalSampleRate.value = results.originalSampleRate;
-        dropouts.value = results.dropouts;
-
-        audioBlobForPreview.value = results.audioBlobForPreview;
+        undoBuffer.value = [
+          new _UndoBufferEntry(
+            results.rawAudioChunk,
+            results.audioBlobForPreview,
+            results.dropouts,
+          ),
+        ];
       } catch (exc) {
         console.error(exc);
         const msg = exc instanceof Error ? exc.message : String(exc);
@@ -94,14 +143,17 @@ export const useAudioStore = defineStore("zsAudio", () => {
     },
 
     async rerunDetection() {
-      if (null == rawAudioChunk) {
+      if (0 >= undoBuffer.value.length) {
         throw new Error("Attempt to rerun detection before loading a file!");
       }
-
       store.incrementBusyCounter();
       try {
         const service = new DetectZsndService();
-        dropouts.value = await service.detect(
+        const currentEntry = undoBuffer.value[undoBufferIndex.value];
+
+        const rawAudioChunk =
+          currentEntry.rawAudioChunk as ZsndWavChunk<Float32Array>;
+        const dropouts = await service.detect(
           {
             reportProgress: (position, total) => {
               store.setProgress((100 * position) / total);
@@ -112,6 +164,14 @@ export const useAudioStore = defineStore("zsAudio", () => {
           minDurationInMs.value,
           threshold.value,
         );
+
+        const newEntry = new _UndoBufferEntry(
+          rawAudioChunk,
+          currentEntry.audioBlobForPreview,
+          dropouts,
+        );
+        undoBuffer.value.splice(undoBufferIndex.value + 1);
+        pushUndoBufferEntry(newEntry);
       } catch (exc) {
         console.error(exc);
         const msg = exc instanceof Error ? exc.message : String(exc);
