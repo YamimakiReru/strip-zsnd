@@ -1,4 +1,3 @@
-from web_controller import WebStripZsndController
 from cli_controller import StripZsndController
 from r_framework import TyperApp
 
@@ -33,7 +32,6 @@ class StripZsndApp(TyperApp):
     def boot(self, args: Sequence[str]):
         super().boot(args)
         self.register_command(self.strip)
-        self.register_command(self.webui)
 
     @TyperApp.default_cmd
     def strip(
@@ -88,6 +86,8 @@ class StripZsndApp(TyperApp):
             ),
             LazyHelp(),
         ] = False,
+        debug: TyperApp.Debug = False,
+        verbose: TyperApp.Verbose = 0,
         ctx: typer.Context = typer.Option(None),
     ):
         if r.DEBUG:
@@ -106,19 +106,3 @@ class StripZsndApp(TyperApp):
             threshold,
             detect_only,
         )
-
-    def webui(
-        self,
-        port: Annotated[
-            Optional[int],
-            typer.Option(
-                "-p",
-                "--port",
-                min=1024,
-                max=49151,
-            ),
-            LazyHelp(),
-        ] = 14514,
-    ):
-        assert port is not None
-        return WebStripZsndController.serve(port)

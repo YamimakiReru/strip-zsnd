@@ -6,8 +6,7 @@ en:
     Waveforms that have cliffs in the middle cannot be repaired.
 
   app.command.strip: Process the file specified on the command line.
-  app.command.webui: Show a browser-based GUI.
-
+  
   app.args.detect_only: Detect zero-runs without creating any output file.
   app.args.force: Overwrite the output file without confirmation, if it already exists.
   app.args.input_path: Path to the input file.

@@ -10,8 +10,7 @@ ja:
     直らない波形            ＿＿|￣￣
 
   app.command.strip: コマンドラインで指定されたファイルを処理します.
-  app.command.webui: ブラウザベースのGUIを表示します.
-
+  
   app.args.detect_only: 検出のみを行い、出力しません.
   app.args.force: 出力先にファイルが存在しても、確認メッセージを出さず上書きします.
   app.args.input_path: 入力ファイルのパス.

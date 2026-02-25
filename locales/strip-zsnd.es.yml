@@ -7,8 +7,7 @@ es:
     Las formas de onda que presentan saltos en el medio no se pueden reparar.
 
   app.command.strip: Procesa el archivo especificado en la línea de comandos.
-  app.command.webui: Mostrar una interfaz gráfica de usuario basada en navegador.
-
+  
   app.args.detect_only: Detecta secuencias de ceros sin crear ningún archivo de salida
   app.args.force: Sobrescribe el archivo de salida sin solicitar confirmación, incluso si ya existe.
   app.args.input_path: Ruta al archivo de entrada

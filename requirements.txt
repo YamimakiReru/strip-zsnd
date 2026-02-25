@@ -1,6 +1,4 @@
 typer
-fastapi
-uvicorn
 
 i18nice
 i18nice[YAML]

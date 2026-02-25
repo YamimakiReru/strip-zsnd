@@ -18,21 +18,8 @@
       }
     },
     {
-      "label": "web_dev",
-      "dependsOn": ["web_dev_front", "sleep", "web_dev_py"]
-    },
-    {
       "label": "web_dev_front",
       "dependsOn": ["web_dev_css", "web_dev_js"]
-    },
-    {
-      "hide": true,
-      "label": "web_dev_py",
-      "type": "shell",
-      "command": ".venv/Scripts/python strip-zsnd.py --debug webui",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      }
     },
     {
       "hide": true,
@@ -53,12 +40,6 @@
         "cwd": "${workspaceFolder}/frontend"
       },
       "isBackground": true
-    },
-    {
-      "hide": true,
-      "label": "sleep",
-      "type": "shell",
-      "command": "sleep 3"
     }
   ]
 }
