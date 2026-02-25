@@ -71,7 +71,7 @@ watch(
       // Generating the preview at the original sample rate is too costly.
       // _ws.waveSurfer.value.setOptions({sampleRate: audioStore.originalSampleRate})
       await _ws.waveSurfer.value.loadBlob(blob);
-      _ws.waveSurfer.value.seekTo(0);
+      // _ws.waveSurfer.value.seekTo(0);
     } finally {
       store.decrementBusyCounter();
     }
