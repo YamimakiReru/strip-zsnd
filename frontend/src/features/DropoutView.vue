@@ -5,6 +5,7 @@ import { formatAudioPosition } from "@/util";
 
 import WaveSurfer from "wavesurfer.js";
 import { useWaveSurferRegions } from "@meersagor/wavesurfer-vue";
+import { ScissorsIcon } from "@heroicons/vue/24/solid";
 import { watch } from "vue";
 
 const props = defineProps<{
@@ -67,9 +68,16 @@ watch(
     class="menu flex-nowrap overflow-y-auto rounded-box"
     :class="$attrs.class"
   >
-    <li v-for="(d, i) in audioStore.dropouts" :key="d.position">
+    <li
+      class="flex flex-row items-center"
+      v-for="(d, i) in audioStore.dropouts"
+      :key="d.position"
+    >
+      <button type="button" class="btn btn-square">
+        <ScissorsIcon class="w-6 h-6" />
+      </button>
       <a
-        class="md:text-base"
+        class="grow w-0 md:text-base"
         @click="
           props.waveSurfer?.setTime?.(
             d.position / audioStore.originalSampleRate,

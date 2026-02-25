@@ -2,31 +2,19 @@
 import { useAudioStore } from "@/stores/AudioStore";
 import { usePortraitFlagUpdater } from "@/stores/ZsndAppStore";
 import WaveformControls from "@/features/WaveformControls.vue";
+import ZsndAppMenu from "@/features/ZsndAppMenu.vue";
 import InputBoxWithPreset from "@/components/InputBoxWithPreset.vue";
-import ThemeChooser from "@/components/ThemeChooser.vue";
-import LanguageChooser from "@/components/LanguageChooser.vue";
 import ErrorBox from "@/components/ErrorBox.vue";
 import LoadingIndicator from "@/components/LoadingIndicator.vue";
 
-import {
-  MoonIcon as MoonIcon16,
-  ClockIcon,
-  SpeakerXMarkIcon,
-  ArrowTopRightOnSquareIcon,
-} from "@heroicons/vue/16/solid";
-import {
-  MoonIcon as MoonIcon24,
-  ArrowPathIcon,
-  ArrowDownIcon,
-} from "@heroicons/vue/24/solid";
+import { ClockIcon, SpeakerXMarkIcon } from "@heroicons/vue/16/solid";
+import { ArrowPathIcon } from "@heroicons/vue/24/solid";
 import { useI18n } from "vue-i18n";
 import { computed, ref } from "vue";
 
 const { t } = useI18n();
 usePortraitFlagUpdater();
 const audioStore = useAudioStore();
-
-const _VERSION = __APP_VERSION__;
 
 const minDuration = computed({
   get: () => audioStore.minDurationInMs,
@@ -38,26 +26,6 @@ const threshold = computed({
 });
 
 const _confirmRerunDetectionDialog = ref<HTMLDialogElement | null>(null);
-const _aboutDialog = ref<HTMLDialogElement | null>(null);
-
-const _downloadFilename = computed(() => {
-  if (!audioStore.originalFilename) {
-    return "audio.wav";
-  } else {
-    const dotPos = audioStore.originalFilename.lastIndexOf(".");
-    return -1 == dotPos
-      ? `${audioStore.originalFilename}-fix.wav`
-      : `${audioStore.originalFilename.substring(0, dotPos)}-fix.wav`;
-  }
-});
-
-const _downloadUrl = computed(() => {
-  if (audioStore.audioBlobForPreview) {
-    return URL.createObjectURL(audioStore.audioBlobForPreview);
-  } else {
-    return "";
-  }
-});
 
 async function _onFileChange(event: Event) {
   const inputElement = event.target as HTMLInputElement;
@@ -86,24 +54,7 @@ function _doRerunDetection() {
     <div class="w-full h-full flex flex-col gap-2 p-2 bg-base-300 rounded-lg">
       <div class="flex flex-col landscape:flex-row md:flex-row gap-2">
         <div class="flex">
-          <div class="dropdown">
-            <div
-              tabindex="0"
-              role="button"
-              class="btn btn-sm md:btn-md btn-neutral text-neutral-content"
-            >
-              <MoonIcon16 class="w-4 h-4 md:hidden" />
-              <MoonIcon24 class="w-6 h-6 hidden md:block" />
-            </div>
-            <ul
-              tabindex="-1"
-              class="dropdown-content menu flex-nowrap overflow-y-scroll max-h-[80vh] bg-base-100 rounded-box z-10 p-2 shadow-2xl"
-            >
-              <LanguageChooser />
-              <ThemeChooser default-theme="synthwave" />
-              <li><a @click="_aboutDialog?.showModal()">About</a></li>
-            </ul>
-          </div>
+          <ZsndAppMenu />
           <div class="join">
             <input
               type="file"
@@ -119,16 +70,6 @@ function _doRerunDetection() {
             >
               <ArrowPathIcon class="w-6 h-6" />
             </button>
-            <a
-              :download="_downloadFilename"
-              :href="_downloadUrl"
-              class="btn btn-sm md:btn-md join-item"
-              :class="{
-                'btn-disabled': null == audioStore.audioBlobForPreview,
-              }"
-            >
-              <ArrowDownIcon class="w-6 h-6" />
-            </a>
           </div>
         </div>
         <div class="flex gap-2">
@@ -177,42 +118,6 @@ function _doRerunDetection() {
           </form>
         </div>
       </div>
-    </dialog>
-    <dialog ref="_aboutDialog" class="modal">
-      <div class="modal-box">
-        <h3 class="text-lg font-bold">
-          <MoonIcon24 class="w-6 h-6 inline" />
-          {{ t("app.title") }}
-        </h3>
-        <p class="pt-4 text-right">
-          <a
-            class="link"
-            href="https://github.com/YamimakiReru/strip-zsnd"
-            target="_blank"
-            ><ArrowTopRightOnSquareIcon class="w-4 h-4 inline" />
-            https://github.com/YamimakiReru/strip-zsnd</a
-          ><br />
-          Copyright (c) 2026
-          <a
-            class="link"
-            href="https://gravatar.com/happilybeliever334e7100d5"
-            target="_blank"
-            >YAMIMAKI, Reru</a
-          >
-        </p>
-        <p class="pt-4 text-right">
-          Licensed under the MIT License.<br />
-          Version {{ _VERSION }}
-        </p>
-        <div class="modal-action">
-          <form method="dialog">
-            <button class="btn">OK</button>
-          </form>
-        </div>
-      </div>
-      <form method="dialog" class="modal-backdrop">
-        <button>OK</button>
-      </form>
     </dialog>
   </div>
 </template>
