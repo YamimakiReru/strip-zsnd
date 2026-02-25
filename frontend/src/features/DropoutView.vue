@@ -6,6 +6,7 @@ import { formatAudioPosition } from "@/util";
 import WaveSurfer from "wavesurfer.js";
 import { useWaveSurferRegions } from "@meersagor/wavesurfer-vue";
 import { ScissorsIcon } from "@heroicons/vue/24/solid";
+import { useI18n } from "vue-i18n";
 import { watch } from "vue";
 
 const props = defineProps<{
@@ -31,6 +32,7 @@ const props = defineProps<{
   >["regionsPlugin"]["value"];
 }>();
 
+const { t } = useI18n();
 const audioStore = useAudioStore();
 const store = useAppStore();
 
@@ -73,7 +75,7 @@ watch(
       v-for="(d, i) in audioStore.dropouts"
       :key="d.position"
     >
-      <button type="button" class="btn btn-square">
+      <button type="button" :title="t('app.trim')" class="btn btn-square">
         <ScissorsIcon class="w-6 h-6" />
       </button>
       <a

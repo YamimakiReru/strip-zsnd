@@ -42,6 +42,7 @@ const _downloadUrl = computed(() => {
 <template>
   <div class="dropdown">
     <div
+      :title="t('app.system_menu')"
       tabindex="0"
       role="button"
       class="btn btn-sm md:btn-md btn-neutral text-neutral-content"

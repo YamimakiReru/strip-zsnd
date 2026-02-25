@@ -32,7 +32,11 @@ function update(v: T) {
 
 <template>
   <div class="dropdown">
-    <label class="input text-base-content" :class="inputContainerClass">
+    <label
+      :title="label"
+      class="input text-base-content"
+      :class="inputContainerClass"
+    >
       <span class="label"
         ><slot name="icon" /><span class="hidden lg:flex">{{
           label

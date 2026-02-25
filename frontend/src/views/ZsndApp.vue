@@ -64,6 +64,7 @@ function _doRerunDetection() {
             />
             <button
               type="button"
+              :title="t('zsnd.rerun_detection')"
               @click="_confirmRerunDetectionDialog?.showModal()"
               :disabled="null == audioStore.audioBlobForPreview"
               class="btn btn-sm md:btn-md join-item"

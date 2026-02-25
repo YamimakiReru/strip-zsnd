@@ -8,13 +8,16 @@ window.R_MESSAGES = {
     "app.pause": "Pause",
     "app.play": "Play",
     "app.save": "Save",
+    "app.system_menu": "System Menu",
     "app.theme": "Theme",
+    "app.trim": "Trim",
     "app.yes": "Yes",
     "app.zoom": "Zoom",
     "app.input_file_cannot_be_opened":
       "Input file '{filename}' cannot be opened: {exc}",
     // ----
     "zsnd.min_duration": "MinDuration",
+    "zsnd.rerun_detection": "Rerun Detection",
     "zsnd.threshold": "Threshold",
     "zsnd.confirm_rerun_detection": "Do you want to rerun dropout detection?",
     "zsnd.error_during_dropout_detection":
@@ -33,12 +36,15 @@ window.R_MESSAGES = {
     "app.play": "Jugar",
     "app.yes": "Si",
     "app.save": "Guardar",
+    "app.system_menu": "Menú del sistema",
     "app.theme": "Tema",
+    "app.trim": "Recortar",
     "app.zoom": "Zoom",
     "app.input_file_cannot_be_opened":
       "No se puede abrir el archivo de entrada '{filename}': {exc}",
     // ----
     "zsnd.min_duration": "Duración mínima",
+    "zsnd.rerun_detection": "Volver a ejecutar la detección",
     "zsnd.threshold": "Umbral de volumen",
     "zsnd.confirm_rerun_detection":
       "¿Desea volver a ejecutar la detección de abandonos?",
@@ -56,13 +62,16 @@ window.R_MESSAGES = {
     "app.pause": "停止",
     "app.play": "再生",
     "app.save": "保存",
+    "app.system_menu": "システムメニュー",
     "app.theme": "テーマ",
+    "app.trim": "トリミング",
     "app.yes": "はい",
     "app.zoom": "拡大",
     "app.input_file_cannot_be_opened":
       "入力ファイル '{filename}' を開けません: {exc}",
     // ----
     "zsnd.min_duration": "音飛びとみなす長さ",
+    "zsnd.rerun_detection": "再検出",
     "zsnd.threshold": "無音とみなす音量",
     "zsnd.confirm_rerun_detection": "ドロップアウト検出をやり直しますか？",
     "zsnd.error_during_dropout_detection":
