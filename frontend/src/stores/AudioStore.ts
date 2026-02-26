@@ -126,6 +126,7 @@ export const useAudioStore = defineStore("zsAudio", () => {
         );
         originalFilename.value = file.name;
         originalSampleRate.value = results.originalSampleRate;
+        undoBufferIndex.value = 0;
         undoBuffer.value = [
           new _UndoBufferEntry(
             results.rawAudioChunk,
