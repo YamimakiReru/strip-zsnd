@@ -14,7 +14,7 @@ import {
   ArrowUturnRightIcon,
 } from "@heroicons/vue/24/solid";
 import { useI18n } from "vue-i18n";
-import { computed, ref } from "vue";
+import { onMounted, computed, ref } from "vue";
 
 const { t } = useI18n();
 usePortraitFlagUpdater();
@@ -30,6 +30,15 @@ const threshold = computed({
 });
 
 const _confirmRerunDetectionDialog = ref<HTMLDialogElement | null>(null);
+
+onMounted(() => {
+  // Ask the user to confirm leaving the page
+  window.addEventListener("beforeunload", (ev) => {
+    if (audioStore.canUndo || audioStore.canRedo) {
+      ev.preventDefault();
+    }
+  });
+});
 
 async function _onFileChange(event: Event) {
   const inputElement = event.target as HTMLInputElement;
