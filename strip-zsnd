@@ -1,0 +1,23 @@
+#!/usr/bin/bash -eu
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+
+cd "$SCRIPT_DIR"
+
+if [ ! -d ".venv" ]; then
+    installing=true
+    python -m venv .venv
+else
+    installing=false
+fi
+
+if [ -d ".venv/Scripts" ]; then
+    source .venv/Scripts/activate
+else
+    source .venv/bin/activate
+fi
+
+if $installing; then
+    pip install -r requirements.txt
+fi
+
+python ./strip-zsnd.py "$@"
