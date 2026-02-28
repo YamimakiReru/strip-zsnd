@@ -15,7 +15,7 @@
   "dependencies": {
     "@heroicons/vue": "^2.2.0",
     "@meersagor/wavesurfer-vue": "^2.0.2",
-    "daisyui": "^5.5.18",
+    "daisyui": "^5.5.19",
     "pinia": "^3.0.4",
     "tailwindcss": "^4.2.1",
     "vue": "^3.5.29",
