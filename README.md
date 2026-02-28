@@ -1,54 +1,55 @@
 # strip-zsnd
-Strip consecutive zero samples in WAV files to mitigate audio issues such as buffer underflow during recording.
+Strip audio skips in WAV files to mitigate audio issues such as buffer underflow during recording.
 
-For detailed usage information, run:
+You can run the GUI version of this application in the browser at:<br />
+https://do.symphonic.lol/app.php/strip-zsnd/
 
-    python ./strp-zsnd.py --help
+## Limitations
+- Only mono `.wav` files are supported.
+- This tool can **mitigate** audio skips, but in many cases it cannot **fully restore** audio glitches. See "[How it works]( https://github.com/YamimakiReru/strip-zsnd/wiki )"
 
----
+## In Japanese (日本語説明)
+WAVファイル内の一定の音飛び区間を除去し、録音時に生じたバッファアンダーフローを軽減します。
 
-## 🚀 venv Setup
+ブラウザ上で動作するGUI版は、以下のURLからも利用できます:<br />
+https://do.symphonic.lol/app.php/strip-zsnd/
 
-### 1. Clone repo.
+### 制限
+- モノラルWAV形式のみのサポートです。
+- このツールは一定の音飛びを **緩和** しますが、ある程度以上の長さの音源については **完全な修復** は困難なことが多いです。「[アプローチ]( https://github.com/YamimakiReru/strip-zsnd/wiki/日本語 )」をご参照ください。
+
+## Installation
+
+### Browser version
+Installation is not required.
+You can use it at: https://do.symphonic.lol/app.php/strip-zsnd/
+
+### GUI version
+It works almost the same as the browser version, but it does not pick up my recent info shown in the browser app ;)
+
+Download the zip file, extract it, and open index.html.
+
+
+### CLI version for Windows
+Download the zip file and execute `strip-zsnd.exe`.
+
+Run `strip-zsnd.exe --help` for more detailed information.
+
+### CLI version for *nix-like systems
+This tool requires Python 3 and Bash.
+
 ```bash
-git clone https://github.com/YamimakiReru/strip-zsnd
+git clone git@github.com:YamimakiReru/strip-zsnd.git
 cd strip-zsnd
+./strip-zsnd --help
 ```
+A venv is automatically initialized upon first execution.
 
-### 2. Create venv environment
-```bash
-python3 -m venv .venv
-```
-
-### 3. Activate venv environment
-
-**macOS / Linux**
-```bash
-source .venv/bin/activate
-```
-
-**Windows（PowerShell）**
-```powershell
-.\.venv\Scripts\Activate.ps1
-```
-
-### 4. 📦 Install dependencies
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## ▶️ Run
-```bash
-python ./strip-zsnd.py damaged.wav [stripped.wav]
-```
----
-
-## 🧹 Exit from venv environment
-```bash
-deactivate
-```
+## Basic Usage
+1. Click **"Choose File"** button and open a `.wav` file.
+    - *Dropouts are automatically detected when opening the file.*
+2. Remove dropouts individually, or select **"Trim all dropouts"** from the 🌙 menu.
+3. Select **"Save"** from the 🌙 menu to export the processed file.
 
 ## License
 
