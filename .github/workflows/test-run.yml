@@ -1,0 +1,24 @@
+name: CLI Help Test
+
+on:
+  schedule:
+    - cron: "11 4 5,14 * *"
+  push:
+    branches: [main]
+  workflow_dispatch: # supports manual running
+
+jobs:
+  help-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Run help test
+        run: |
+          ./strip-zsnd --help
