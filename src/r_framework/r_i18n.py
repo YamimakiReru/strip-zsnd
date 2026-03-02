@@ -19,7 +19,6 @@ class I18nConfigurator(FrameworkLogMixin):
     def configure(self, app_name: str, app_dir: Path):
         locale_dir = app_dir / "locales"
 
-        i18n.set("fallback", self.FALLBACK)
         i18n.set("file_format", self.FORMAT)
         i18n.set("filename_format", f"{app_name}.{{locale}}.{{format}}")
         i18n.load_path.append(str(locale_dir))
@@ -34,6 +33,7 @@ class I18nConfigurator(FrameworkLogMixin):
         locale.setlocale(locale.LC_ALL, "")
         lang = self._determine_locale(available_locales)
         i18n.set("locale", lang or self.FALLBACK)
+        i18n.set("fallback", self.FALLBACK)
 
         i18n.set("on_missing_translation", self._on_missing_translation)
         self.hook_gettext()

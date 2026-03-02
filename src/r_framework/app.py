@@ -16,9 +16,10 @@ import typing
 
 
 class App(LogMixin):
-    def __init__(self, name: str, app_dir: Path):
+    def __init__(self, name: str, app_dir: Path, *, version: str = "1.0.0"):
         self.name = name
         self.app_dir = app_dir
+        self.version = version
 
     def boot(self, args: Sequence[str]):
         r.DEBUG = "--debug" in args
@@ -41,6 +42,7 @@ class TyperApp(App):
 
         pass
 
+    Version = Annotated[Optional[bool], typer.Option("--version")]
     Debug = Annotated[Optional[bool], typer.Option()]
     Verbose = Annotated[
         Optional[int],
@@ -63,10 +65,12 @@ class TyperApp(App):
         func.__dict__[cls._DEFAULT_CMD_KEY] = True
         return func
 
-    def register_command(self, func: Callable[..., Any]):
+    def register_command(
+        self, func: Callable[..., Any], *, help_args: dict[str, Any] = {}
+    ):
         self.typer.command(
             cls=self._TyperCommand,
-            help=_(f"app.command.{func.__name__}"),
+            help=_(f"app.command.{func.__name__}").format(**help_args),
         )(func)
 
     def register_callback(self, func: Callable[..., Any]):
@@ -76,19 +80,22 @@ class TyperApp(App):
         )(func)
 
     @override
-    def __init__(self, name: str, app_dir: Path):
-        super().__init__(name, app_dir)
+    def __init__(self, name: str, app_dir: Path, *, version: str):
+        super().__init__(name, app_dir, version=version)
 
     @override
     def boot(self, args: Sequence[str]):
         super().boot(args)
+
+        __, *metadata = typing.get_args(self.Version)
+        metadata[0].callback = self._version_callback
 
         __, *metadata = typing.get_args(self.Verbose)
         metadata[0].callback = self._verbose_callback
 
         self.typer = typer.Typer(
             name=self.name,
-            help=_("app.description"),
+            help=_("app.description") % {"version": self.version},
             options_metavar=_("click.options_metavar"),
             subcommand_metavar=_("click.subcommand_metavar"),
         )
@@ -101,11 +108,17 @@ class TyperApp(App):
             )(self._typer_callback)
         return self.typer(args=args)
 
+    def _version_callback(self):
+        click.echo(_("app.description.version").format(version=self.version))
+        raise typer.Exit(0)
+
     def _verbose_callback(self, verbosity: int):
         min_limit = 1 if r.DEBUG else 0
         self.configure_log(max(verbosity, min_limit))
 
-    def _typer_callback(self, verbose: Verbose = 0, debug: Debug = False):
+    def _typer_callback(
+        self, version: Version = False, verbose: Verbose = 0, debug: Debug = False
+    ):
         """
         Only a stub used to hold command line options.
         """

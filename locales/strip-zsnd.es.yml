@@ -1,13 +1,15 @@
 # yaml-language-server: $schema=none
 es:
-  app.description: |
-    Una herramienta para eliminar las muestras cero que faltan en un archivo WAV
+  app.description.version: strip-zsnd v{version}
+  app.description: &desc |
+    strip-zsnd v{version}: Una herramienta para eliminar las muestras cero que faltan en un archivo WAV
 
     Elimina los ceros consecutivos causados por el desbordamiento del búfer durante la grabación.
     Las formas de onda que presentan saltos en el medio no se pueden reparar.
 
-  app.command.strip: Procesa el archivo especificado en la línea de comandos.
-  
+  # app.command.strip: Procesa el archivo especificado en la línea de comandos.
+  app.command.strip: *desc
+
   app.args.detect_only: Detecta secuencias de ceros sin crear ningún archivo de salida
   app.args.force: Sobrescribe el archivo de salida sin solicitar confirmación, incluso si ya existe.
   app.args.input_path: Ruta al archivo de entrada

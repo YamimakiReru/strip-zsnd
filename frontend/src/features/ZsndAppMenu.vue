@@ -68,6 +68,13 @@ const _downloadUrl = computed(() => {
       <hr class="my-2" />
       <LanguageChooser />
       <ThemeChooser default-theme="synthwave" />
+      <li>
+        <a :href="t('app.help.url')" target="_blank"
+          ><ArrowTopRightOnSquareIcon class="w-4 h-4 inline" />{{
+            t("app.help")
+          }}</a
+        >
+      </li>
       <li><a @click="_aboutDialog?.showModal()">About</a></li>
     </ul>
     <dialog ref="_aboutDialog" class="modal">

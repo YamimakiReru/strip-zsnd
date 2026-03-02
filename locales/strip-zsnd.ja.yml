@@ -1,6 +1,7 @@
 ja:
-  app.description: |
-    WAVファイルの欠落0サンプルを除去するツール
+  app.description.version: strip-zsnd v{version}
+  app.description: &desc |
+    strip-zsnd v{version}: WAVファイルの欠落0サンプルを除去するツール
 
     録音時のバッファアンダーフローなどで発生する、連続した0サンプルを取り除きます.
     0サンプルではなく、波形が途中で飛んで断崖になっているものは直りません.
@@ -9,7 +10,8 @@ ja:
 
     直らない波形            ＿＿|￣￣
 
-  app.command.strip: コマンドラインで指定されたファイルを処理します.
+  # app.command.strip: コマンドラインで指定されたファイルを処理します.
+  app.command.strip: *desc
   
   app.args.detect_only: 検出のみを行い、出力しません.
   app.args.force: 出力先にファイルが存在しても、確認メッセージを出さず上書きします.

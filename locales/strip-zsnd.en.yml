@@ -1,12 +1,14 @@
 en:
-  app.description: |
-    Strip consecutive zero samples in WAV files
+  app.description.version: strip-zsnd v{version}
+  app.description: &desc |
+    strip-zsnd v{version}: Strip consecutive zero samples in WAV files v{version}
 
     Removes consecutive zeros caused by buffer underflow during recording.
     Waveforms that have cliffs in the middle cannot be repaired.
 
-  app.command.strip: Process the file specified on the command line.
-  
+  # app.command.strip: Process the file specified on the command line.
+  app.command.strip: *desc
+
   app.args.detect_only: Detect zero-runs without creating any output file.
   app.args.force: Overwrite the output file without confirmation, if it already exists.
   app.args.input_path: Path to the input file.

@@ -26,12 +26,12 @@ def main():
 
 class StripZsndApp(TyperApp):
     def __init__(self, app_dir: Path):
-        super().__init__("strip-zsnd", app_dir)
+        super().__init__("strip-zsnd", app_dir, version="1.0.1")
 
     @override
     def boot(self, args: Sequence[str]):
         super().boot(args)
-        self.register_command(self.strip)
+        self.register_command(self.strip, help_args={"version": self.version})
 
     @TyperApp.default_cmd
     def strip(
@@ -86,6 +86,7 @@ class StripZsndApp(TyperApp):
             ),
             LazyHelp(),
         ] = False,
+        version: TyperApp.Version = False,
         debug: TyperApp.Debug = False,
         verbose: TyperApp.Verbose = 0,
         ctx: typer.Context = typer.Option(None),

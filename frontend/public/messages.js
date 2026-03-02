@@ -4,6 +4,8 @@ window.R_MESSAGES = {
   en: {
     "app.locale_name": "English",
     "app.title": "Strip consecutive zero samples in WAV files",
+    "app.help": "Help",
+    "app.help.url": "https://github.com/YamimakiReru/strip-zsnd/wiki",
     "app.no": "No",
     "app.pause": "Pause",
     "app.play": "Play",
@@ -33,6 +35,8 @@ window.R_MESSAGES = {
     "app.locale_name": "Español",
     "app.title":
       "Una herramienta para eliminar las muestras cero que faltan en un archivo WAV",
+    "app.help": "Ayuda",
+    "app.help.url": "https://github.com/YamimakiReru/strip-zsnd/wiki",
     "app.no": "No",
     "app.pause": "Pausa",
     "app.play": "Jugar",
@@ -62,6 +66,8 @@ window.R_MESSAGES = {
   ja: {
     "app.locale_name": "日本語",
     "app.title": "WAVファイルの欠落0サンプルを除去するツール",
+    "app.help": "ヘルプ",
+    "app.help.url": "https://github.com/YamimakiReru/strip-zsnd/wiki/日本語",
     "app.no": "いいえ",
     "app.pause": "停止",
     "app.play": "再生",
