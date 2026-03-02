@@ -7,7 +7,7 @@ datas, binaries, hiddenimports = collect_all("rich._unicode_data")
 
 # Include documents for the "rich" package
 for p in Path(os.getcwd()).resolve().rglob("**/site-packages/rich-*"):
-    datas.append((str(p / 'LICENSE'), p.name))
+    datas.append((str(p / 'licenses' / 'LICENSE'), p.name))
     datas.append((str(p / 'METADATA'), p.name))
 
 a = Analysis(
