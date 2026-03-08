@@ -50,6 +50,8 @@ def main():
     shutil.copytree(
         SCRIPT_DIR / "locales", DIST_APP_DIR / "locales", dirs_exist_ok=True
     )
+    shutil.copy(SCRIPT_DIR / "README.md", DIST_APP_DIR / "README.md")
+    shutil.copy(SCRIPT_DIR / "LICENSE", DIST_APP_DIR / "LICENSE")
 
     with zipfile.ZipFile(DIST_DIR / f"{APP_NAME}.zip", "w", zipfile.ZIP_DEFLATED) as z:
         for file in DIST_APP_DIR.rglob("*"):

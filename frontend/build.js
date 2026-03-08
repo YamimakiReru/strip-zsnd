@@ -37,10 +37,12 @@ zipfs.on("close", () =>
   console.info(`Compression complete: ${zipper.pointer()} bytes`),
 );
 zipper.pipe(zipfs);
-zipper.glob(`*.html`, { cwd: `${__dirname}/dist` });
-zipper.glob(`*.js`, { cwd: `${__dirname}/dist` });
-zipper.glob(`*.css`, { cwd: `${__dirname}/dist` });
-zipper.glob(`*.map`, { cwd: `${__dirname}/dist` });
+zipper.glob("*.html", { cwd: `${__dirname}/dist` });
+zipper.glob("*.js", { cwd: `${__dirname}/dist` });
+zipper.glob("*.css", { cwd: `${__dirname}/dist` });
+zipper.glob("*.map", { cwd: `${__dirname}/dist` });
+zipper.file(path.resolve(__dirname, "../README.md"), { name: "README.md" });
+zipper.file(path.resolve(__dirname, "../LICENSE"), { name: "LICENSE" });
 await zipper.finalize();
 
 function npx(command, ...args) {
