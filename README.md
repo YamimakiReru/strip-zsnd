@@ -1,5 +1,5 @@
 # strip-zsnd
-Strip audio skips in WAV files to mitigate audio issues such as buffer underflow during recording.
+Detect and strip audio skips in WAV files to mitigate audio issues such as buffer underflow during recording.
 
 You can run the GUI version of this application in the browser at:<br />
 https://do.symphonic.lol/app.php/strip-zsnd/
@@ -9,7 +9,7 @@ https://do.symphonic.lol/app.php/strip-zsnd/
 - This tool can **mitigate** audio skips, but in many cases it cannot **fully restore** audio glitches. See "[How it works]( https://github.com/YamimakiReru/strip-zsnd/wiki )"
 
 ## In Japanese (日本語説明)
-WAVファイル内の一定の音飛び区間を除去し、録音時に生じたバッファアンダーフローを軽減します。
+WAVファイル内の一定の音飛び区間を検知・除去し、録音時に生じたバッファアンダーフローを軽減します。
 
 ブラウザ上で動作するGUI版は、以下のURLからも利用できます:<br />
 https://do.symphonic.lol/app.php/strip-zsnd/
