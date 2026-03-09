@@ -7,6 +7,7 @@ https://do.symphonic.lol/app.php/strip-zsnd/
 ## Limitations
 - Only mono `.wav` files are supported.
 - This tool can **mitigate** audio skips, but in many cases it cannot **fully restore** audio glitches. See "[How it works]( https://github.com/YamimakiReru/strip-zsnd/wiki )"
+- Unfortunately, when audio glitches are detected, it’s better to re-record the damaged audio, if possible, rather than try to fix it.
 
 ## In Japanese (日本語説明)
 WAVファイル内の一定の音飛び区間を検知・除去し、録音時に生じたバッファアンダーフローを軽減します。
@@ -19,6 +20,7 @@ https://do.symphonic.lol/app.php/strip-zsnd/
 ### 制限
 - モノラルWAV形式のみのサポートです。
 - このツールは一定の音飛びを **緩和** しますが、ある程度以上の長さの音源については **完全な修復** は困難なことが多いです。「[アプローチ]( https://github.com/YamimakiReru/strip-zsnd/wiki/日本語 )」をご参照ください。
+- 音飛びが検出された場合は、可能であれば録音環境を見直してリテイクしたほうが良いです。
 
 ### 基本的な使い方
 1. **「ファイルの選択」** ボタンをクリックし、WAVファイルを読み込みます
