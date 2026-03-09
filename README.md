@@ -4,6 +4,8 @@ Detect and strip audio skips in WAV files to mitigate audio issues such as buffe
 You can run the GUI version of this application in the browser at:<br />
 https://do.symphonic.lol/app.php/strip-zsnd/
 
+See [Wiki]( https://github.com/YamimakiReru/strip-zsnd/wiki ) for more details.
+
 ## Limitations
 - Only mono `.wav` files are supported.
 - This tool can **mitigate** audio skips, but in many cases it cannot **fully restore** audio glitches. See "[How it works]( https://github.com/YamimakiReru/strip-zsnd/wiki )"
