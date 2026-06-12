@@ -29,7 +29,7 @@
     "@swc/core": "^1.15.17",
     "@tailwindcss/cli": "^4.2.1",
     "archiver": "^7.0.1",
-    "vitest": "^4.0.18",
+    "vitest": "^4.1.8",
     "vue-loader": "^17.4.2"
   }
 }
